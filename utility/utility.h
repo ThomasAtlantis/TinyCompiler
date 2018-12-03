@@ -22,6 +22,7 @@
 #define is_digit(ch) (ch>='0'&&ch<='9')
 #define is_letter(ch) ((ch>='a'&&ch<='z')||(ch>='A'&&ch<='Z'))
 #define is_blank(ch) (ch==' '||ch=='\n'||ch=='\t'||ch=='\r')
+#define all(t) t.begin(),t.end()
 
 using namespace std;
 
