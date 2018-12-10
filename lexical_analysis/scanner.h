@@ -11,12 +11,6 @@
 #include "process_number.h"
 #include "process_string.h"
 
-typedef struct {
-    Token token;
-    int error_type;
-    string error_log;
-} ScannerGet;
-
 class Scanner {
 private:
     string& buffer;
@@ -24,6 +18,11 @@ private:
     static int curr_index;
     static int line_label;
 public:
+    typedef struct {
+        Errors::Error_message error_m;
+        Token token;
+    } Scanner_ret;
+
     P_string p_string;
     P_charac p_charac;
     P_number p_number;
@@ -31,7 +30,7 @@ public:
     Scanner(string& bf, Tables& tbs);
     ~Scanner();
 
-    ScannerGet scan_next();
+    Scanner_ret scan_next();
 };
 
 

@@ -8,5 +8,6 @@
 #include "grammar.h"
 #include "tables.h"
 #include "token.h"
+#include "errors.h"
 
 #endif //COMPILE_DATA_STRUCTURE_H

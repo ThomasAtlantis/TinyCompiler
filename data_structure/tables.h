@@ -11,11 +11,12 @@ class Tables {
 public:
     typedef enum {INTEGER, FLOAT} Num_type;
     typedef union {float f; int i;} Number;
+    typedef char Charac;
 
     vector<string> KT;
     vector<string> PT;
     vector<string> IT;
-    vector<char> cT;
+    vector<Charac> cT;
     vector<string> ST;
     vector<Number> CT;
     Tables();
