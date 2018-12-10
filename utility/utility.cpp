@@ -6,14 +6,14 @@
 
 vector<string> split(const string& str, const string& sep) {
     vector<string> vec;
-    char *c_str = new char[str.length()];
+    auto *c_str = new char[str.length()];
     strcpy(c_str, str.c_str());
     char *p = strtok(c_str, sep.c_str());
     while (p) {
         vec.emplace_back(string(p));
         p = strtok(nullptr, sep.c_str());
     }
-    delete [] c_str;
+//    delete [] c_str; // Del it for debugging
     return vec;
 }
 

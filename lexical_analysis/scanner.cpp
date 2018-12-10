@@ -77,12 +77,12 @@ Scanner::Scanner_ret Scanner::Scanner::scan_next() {
         int l_index = curr_index - 1;
         do current_char = buffer[curr_index ++];
         while (is_letter(current_char) or is_digit(current_char) or current_char == '_');
-        string tmp = buffer.substr(l_index, curr_index - l_index - 1);
+        string tmp = buffer.substr(size_t(l_index), size_t(curr_index - l_index - 1));
         auto index = find(all(tables.KT), tmp);
         if (index != tables.KT.end()) {
             result.error_m.type = Errors::clear;
             result.token.kind = 'K';
-            result.token.index = index - tables.KT.begin();
+            result.token.index = size_t(index - tables.KT.begin());
         } else {
             if (!tables.IT.empty())
                 index = find(all(tables.IT), tmp);
@@ -92,7 +92,7 @@ Scanner::Scanner_ret Scanner::Scanner::scan_next() {
                 tables.IT.push_back(tmp);
                 result.token.index = tables.IT.size() - 1;
             } else {
-                result.token.index = index - tables.IT.begin();
+                result.token.index = size_t(index - tables.IT.begin());
             }
         }
         curr_index --;
@@ -104,33 +104,35 @@ Scanner::Scanner_ret Scanner::Scanner::scan_next() {
         result.error_m.log = Errors::symbol_error[0];
         for (int i = 0; i < 3; i ++) {
             if (curr_index + i > buffer.length()) break;
-            string key = buffer.substr(curr_index - 1, i + 1);
+            string key = buffer.substr(size_t(curr_index - 1), size_t(i + 1));
             auto index = find(all(tables.PT), key);
             if (index != tables.PT.end()) {
                 result.error_m.type = Errors::clear;
-                result.token.index = index - tables.PT.begin();
+                result.token.index = size_t(index - tables.PT.begin());
             } else break;
         }
         if (result.error_m.type == Errors::clear) {
             if (tables.PT[result.token.index] == "//") {
                 while(curr_index < buffer.length() && buffer[curr_index ++] != '\n');
                 line_label ++;
-                result.error_m.type = Errors::eof;
-                return result;
+                return scan_next();
             } else if (tables.PT[result.token.index] == "/*") {
-                while(curr_index < buffer.length() - 1 && buffer.substr(curr_index ++, 2) != "*/") {
+                while(curr_index < buffer.length() - 1 && buffer.substr(size_t(curr_index ++), 2) != "*/")
                     if (buffer[curr_index] == '\n') line_label ++;
-                }
                 curr_index += 1;
                 if (curr_index >= buffer.length()) {
                     result.error_m.type = Errors::error;
                     result.error_m.log = Errors::symbol_error[1];
-                } else result.error_m.type = Errors::eof;
-                return result;
+                    return result;
+                } else return scan_next();
             }
         }
     }
 //    if (result.error_type == 0)
 //        cout << left << "[" << setw(4) << line_label << "] " << buffer.substr(old_index, curr_index - old_index) << " ";
     return result;
+}
+
+int Scanner::get_line() {
+    return line_label;
 }

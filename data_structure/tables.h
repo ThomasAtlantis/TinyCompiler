@@ -10,7 +10,13 @@
 class Tables {
 public:
     typedef enum {INTEGER, FLOAT} Num_type;
-    typedef union {float f; int i;} Number;
+    typedef struct {
+        Num_type type;
+        union {
+            float f;
+            int i;
+        } value;
+    } Number;
     typedef char Charac;
 
     vector<string> KT;
@@ -22,5 +28,8 @@ public:
     Tables();
     ~Tables();
 };
+
+ostream& operator<<(ostream& out, Tables::Number n);
+bool operator==(Tables::Number n_1, Tables::Number n_2);
 
 #endif //COMPILE_TABLES_H

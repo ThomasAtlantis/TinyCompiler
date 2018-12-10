@@ -16,7 +16,7 @@ Grammar::Grammar(Tables &t): tables(t) {}
 Grammar::~Grammar() = default;
 
 // 设置文法开始符号`开始符号
-void Grammar::set_start(string& start) {
+void Grammar::set_start(string start) {
     Grammar::S = start;
 }
 

@@ -38,7 +38,7 @@ public:
     ProductionAdder add(string left);
 
     // 设置文法开始符号
-    void set_start(string& start);
+    void set_start(string start);
 
     // 判断符号类型：终结符、非终结符、空字符
     symbol_t symbol_type(string& x);

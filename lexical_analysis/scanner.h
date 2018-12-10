@@ -31,6 +31,7 @@ public:
     ~Scanner();
 
     Scanner_ret scan_next();
+    int get_line();
 };
 
 

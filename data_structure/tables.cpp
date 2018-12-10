@@ -22,4 +22,29 @@ Tables::Tables() {
 
 Tables::~Tables() = default;
 
+ostream& operator<<(ostream& out, Tables::Number n) {
+    switch(n.type) {
+        case Tables::INTEGER:
+            out << n.value.i;
+            break;
+        case Tables::FLOAT:
+            out << n.value.f;
+            break;
+        default: break;
+    }
+    return out;
+}
+
+bool operator==(Tables::Number n_1, Tables::Number n_2) {
+    if (n_1.type == n_2.type) {
+        switch(n_1.type) {
+            case Tables::INTEGER:
+                return n_1.value.i == n_2.value.i;
+            case Tables::FLOAT:
+                return n_1.value.f == n_2.value.f;
+            default: return false;
+        }
+    } else return false;
+}
+
 

@@ -9,5 +9,6 @@
 #include "tables.h"
 #include "token.h"
 #include "errors.h"
+#include "quarternary.h"
 
 #endif //COMPILE_DATA_STRUCTURE_H

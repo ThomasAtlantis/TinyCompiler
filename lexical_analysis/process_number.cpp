@@ -3,6 +3,7 @@
 //
 
 #include "process_number.h"
+#include "../data_structure/tables.h"
 
 P_number::Shifter P_number::shifter[7] = {
         [](char ch, State state)->State {
@@ -52,7 +53,7 @@ bool P_number::process(int &cur_index, Tables::Number &num, Tables::Num_type& ty
             case state_0:
                 value = exp_value = frac_width = 0;
                 exp_sign = 1;
-                num.i = 0;
+                num.value.i = 0;
                 type = Tables::INTEGER;
                 break;
             case state_1:
@@ -83,9 +84,10 @@ bool P_number::process(int &cur_index, Tables::Number &num, Tables::Num_type& ty
         state = (*shifter[state])(ch, state);
     }
     if (type == Tables::INTEGER)
-        num.i = static_cast<int>(value * pow(10, exp_sign * exp_value - frac_width));
+        num.value.i = static_cast<int>(value * pow(10, exp_sign * exp_value - frac_width));
     else if (type == Tables::FLOAT)
-        num.f = static_cast<float>(value * pow(10, exp_sign * exp_value - frac_width));
+        num.value.f = static_cast<float>(value * pow(10, exp_sign * exp_value - frac_width));
+    num.type = type;
     cur_index --;
     return true;
 }
