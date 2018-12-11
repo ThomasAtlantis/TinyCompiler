@@ -50,6 +50,8 @@ string Recursub::token2str(Token token) {
     return w;
 }
 
+// TODO: get token from scanner.scan_next() in subprogram
+
 bool Recursub::subprogram(
     vector<Token>& tokens,
     string left,
@@ -57,11 +59,6 @@ bool Recursub::subprogram(
     vector<Tables::Number*>& operands,
     vector<int>& layers
 ) {
-    /// PRINT GRAMMAR TREE
-//    cout << "        ";
-//    for (int i = 0; i < layers.size() - 1; i ++) if (layers[i]) cout << "   "; else cout << "│  ";
-//    if (layers.back()) cout << "└─ "; else cout << "├─ "; cout << left << endl;
-    /// END PRINT GRAMMAR TREE
     auto p = Grammar::G.find(left);
     bool epsilon_flag = false;
     for (auto rl: p->second) {
@@ -74,24 +71,9 @@ bool Recursub::subprogram(
         Token token_sav;
         for (auto rs: rl) {
             if (G.symbol_type(rs) == 1) {
-                /// PRINT GRAMMAR TREE
-//                if (rs != *(rl.end() - 1)) layers.push_back(0); else layers.push_back(1);
-                /// END PRINT GRAMMAR TREE
-
                 if (!subprogram(tokens, rs, Qs, operands, layers)) return false;
-
-                /// PRINT GRAMMAR TREE
-//                layers.pop_back();
-                /// END PRINT GRAMMAR TREE
                 w = token2str(tokens.front());
             } else {
-                /// PRINT GRAMMAR TREE
-//                if (rs.find("qua") == string::npos && rs != "epsilon") cout << setw(8) << rs;
-//                else cout << "        ";
-//                for (int layer : layers) if (layer) cout << "   "; else cout << "│  ";
-//                if (rs == *(rl.end() - 1)) cout << "└─ ";
-//                else cout << "├─ "; cout << rs << endl;
-                /// END PRINT GRAMMAR TREE
                 if (rs.find("qua") == 0) {
                     char operat = rs[3];
                     if (operat == 'p') {
