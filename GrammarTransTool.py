@@ -1,3 +1,4 @@
+# -*- coding:utf-8
 class SymbolGen:
 	def __init__(self, order_ub):
 		self.letter = ord('A')
@@ -28,54 +29,57 @@ def word2symbol(word_dict, symbol_gen, word):
 	return word_dict[word]
 
 
-def grammar_trans(word_filename, symbol_filename, dict_filename):
+def grammar_trans(filenames):
 	symbol_gen = SymbolGen(10)
 	symbol_dict = {}
-	with open(word_filename, "r", encoding="utf-8") as in_file:
-		with open(symbol_filename, "w", encoding="utf-8") as out_file:
-			for line in in_file.readlines():
-				production = line.strip().split('->')
-				if len(production) < 2:
-					continue
-				left_symbol = production[0].strip()
-				right_symbols = production[1].strip().split()
-				try:
-					out_file.write('grammar.add("')
-					out_file.write(word2symbol(symbol_dict, symbol_gen, left_symbol))
-					out_file.write('") >> "' + word2symbol(symbol_dict, symbol_gen, right_symbols[0]))
-					begin = False
-					for symbol in right_symbols[1:]:
-						if symbol == '|':
-							out_file.write('" | "')
-							begin = True
-						else:
-							if not begin:
-								out_file.write(' ')
-							else:
-								begin = False
-							out_file.write(word2symbol(symbol_dict, symbol_gen, symbol))
-					out_file.write('"\n')
-				except Exception as error:
-					print(error)
-					return
-	with open(dict_filename, "w", encoding='utf-8') as dict_file:
+	in_file = open(filenames['word_filename'], "r", encoding="utf-8")
+	out_file = open(filenames['symb_filename'], "w", encoding="utf-8")
+	simp_file = open(filenames['simp_filename'], "w", encoding="utf-8")
+	for line in in_file.readlines():
+		production = line.strip().split('->')
+		if len(production) < 2:
+			continue
+		left_symbol = production[0].strip()
+		right_symbols = production[1].strip().split()
+		try:
+			out_file.write('grammar.add("')
+			out_file.write(word2symbol(symbol_dict, symbol_gen, left_symbol))
+			simp_file.write(word2symbol(symbol_dict, symbol_gen, left_symbol))
+			out_file.write('") >> "')
+			simp_file.write(' -> ')
+			line_out = ' '.join(
+				word2symbol(symbol_dict, symbol_gen, symbol) for symbol in right_symbols
+			).replace(' | ', '" | "')
+			line_simp = line_out.replace('"', '')
+			out_file.write(line_out + '";\n')
+			simp_file.write(line_simp + "\n")
+		except Exception as error:
+			print(error)
+			return
+	in_file.close()
+	out_file.close()
+	simp_file.close()
+	with open(filenames['dict_filename'], "w", encoding='utf-8') as dict_file:
 		li = sorted(symbol_dict.items(), key=lambda x: x[1])
 		for word, letter in li:
 			dict_file.write(letter + " " + word + "\n")
 
 
 if __name__ == '__main__':
-	word_filename = "c--_grammar_raw.txt"
-	symb_filename = "c--_grammar.txt"
-	dict_filename = "c--_grammar_dict.txt"
-	grammar_trans(word_filename, symb_filename, dict_filename)
+	filenames = {
+		'word_filename': "c--_grammar_raw.txt",
+		'symb_filename': "c--_grammar_src.txt",
+		'simp_filename': "c--_grammar_simp.txt",
+		'dict_filename': "c--_grammar_dict.txt",
+	}
+	grammar_trans(filenames)
 	print('# 文法描述文件 #')
-	with open(word_filename, encoding='utf-8') as text:
+	with open(filenames['word_filename'], encoding='utf-8') as text:
 		print(text.read())
 	print('# 文法程序源码 #')
-	with open(symb_filename, encoding='utf-8') as text:
+	with open(filenames['symb_filename'], encoding='utf-8') as text:
 		print(text.read())
 	print('# 文法符号映射 #')
-	with open(dict_filename, encoding='utf-8') as text:
+	with open(filenames['dict_filename'], encoding='utf-8') as text:
 		print(text.read())
 

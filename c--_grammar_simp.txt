@@ -1,0 +1,44 @@
+A0 -> A1 A2
+A2 -> int main ( ) { A3 }
+A1 -> A4 A1 | null
+A4 -> void A5 ( A6 ) { A3 }
+A6 -> A7 A8
+A8 -> , A7 | null
+A7 -> A9 A5
+A3 -> B0 A3 | null
+B0 -> B1
+B1 -> B2 ; B3
+B3 -> B2 ; B3 | null
+B2 -> B4 | B5 | B6
+B4 -> A9 A5 B7
+B7 -> = B8 | null
+B5 -> B9 = B8
+B6 -> return
+A9 -> int | float | bool
+A5 -> \I
+C0 -> \C
+B9 -> A5
+B8 -> C1 | C2
+C1 -> C3 C4
+C4 -> || C3 C4 | null
+C3 -> C5 C6
+C6 -> && C5 C6 | null
+C5 -> C7
+C7 -> C8 | C2
+C8 -> C9 D0
+D0 -> > C9 | >= C9 | < C9 | <= C9 | == C9 | != C9 | null
+C9 -> D1
+D1 -> D2 | C2
+D2 -> D3 D4
+D4 -> + D3 D4 | - D3 D4 | null
+D3 -> D5 D6
+D6 -> * D5 D6 | / D5 D6 | null
+D5 -> D7
+D7 -> D8 | C2
+D8 -> D9 E0
+E0 -> | D9 E0 | null
+D9 -> E1 E2
+E2 -> & E1 E2 | null
+E1 -> C2
+C2 -> E3 | ! E3 | - E3 | ~ E3
+E3 -> A5 | C0 | ( B8 )
