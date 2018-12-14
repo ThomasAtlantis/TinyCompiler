@@ -6,7 +6,7 @@
 #define COMPILE_TABLES_H
 
 #include "../utility/utility.h"
-
+/*
 class Tables {
 public:
     typedef enum {INTEGER, FLOAT, BOOLEAN, STRUCTURE, ARRAY} TVAL;
@@ -89,5 +89,5 @@ typedef struct {
     bool synbl; // 是符号表符号则为真，否则为假
     string src; // 填写单词源码，当synbl为真时查填符号表，否则直接匹配文法
 } Token; // 词法分析器返回Token
-
+*/
 #endif //COMPILE_TABLES_H

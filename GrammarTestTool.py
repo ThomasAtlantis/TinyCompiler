@@ -23,9 +23,9 @@ def generate(symbol, grammar):
 	global programs
 	if symbol not in grammar.keys():
 		if symbol != 'null':
-			if symbol == '\C':
+			if symbol == '@C':
 				programs += str(random.randint(0, 10))
-			elif symbol == '\I':
+			elif symbol == '@I':
 				programs += chr(ord('a') + random.randint(0, 26))
 			else:
 				programs += symbol

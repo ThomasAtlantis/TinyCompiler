@@ -1,397 +1,398 @@
 ############### 0 ###############
-int main ( ) {
-int l ;
+bool b = ( - 3 ) && ( 4 ) ;
+string z = ( ~ 1 ) ;
+void main ( ) {
 }
 ############### 1 ###############
-void y ( float b ) {
-}
-void f ( int x ) {
-}
-void t ( bool i , bool s ) {
-}
-int main ( ) {
-return ;
+bool z = - 3 ;
+void main ( ) {
 }
 ############### 2 ###############
-int main ( ) {
-float j ;
+float h ;
+char x ;
+void main ( ) {
+for ( n = 7 ;
+1 ;
+return ) {
+break ;
+}
+while ( ( ! 1 ) ) {
+continue ;
+q = ~ 8 ;
+}
 }
 ############### 3 ###############
-void z ( bool j , bool b ) {
-return ;
-return ;
-bool i = ~ n ;
+bool h = 3 ;
+void p ( string g , string t ) {
 }
-void v ( int u ) {
-}
-void n ( int a , float n ) {
-v = - a ;
+int c ;
+void main ( ) {
 return ;
-bool n ;
-return ;
-return ;
-int s = 2 ;
-}
-int main ( ) {
+b = ! 2 ;
+int i ;
 }
 ############### 4 ###############
-void r ( int q , float t ) {
-d = - g ;
-}
-int main ( ) {
+float i ;
+void main ( ) {
 }
 ############### 5 ###############
-void f ( bool e ) {
-float v ;
-}
-int main ( ) {
-return ;
+string v = ~ ( ~ i || ( o ) || - ( ! p ) == ! 6 ) ;
+void main ( ) {
 }
 ############### 6 ###############
-void y ( int c ) {
-}
-void t ( float w , int d ) {
-}
-int main ( ) {
-bool z ;
-return ;
-bool p ;
+float d = ~ m ;
+void main ( ) {
 }
 ############### 7 ###############
-void v ( float x , float e ) {
-}
-void j ( int e , bool a ) {
-}
-int main ( ) {
+char l ;
+void main ( ) {
 }
 ############### 8 ###############
-int main ( ) {
-bool o ;
+void v ( float u , float m ) {
+}
+void s ( int g ) {
+}
+void main ( ) {
 }
 ############### 9 ###############
-int main ( ) {
-return ;
-int y ;
-a = ~ 8 ;
-return ;
-float m ;
+int { ;
+void main ( ) {
 }
 ############### 10 ###############
-void g ( float a ) {
-bool m ;
+bool z = 10 ;
+void c ( char b ) {
 }
-void c ( bool w ) {
+void main ( ) {
+while ( f ) {
+return ;
+continue ;
+return ;
+return ;
+if ( ( ~ m ) ) {
+if ( ! ( ! p ) && - 0 && i && ~ ( ! n ) >= 10 ) {
 }
-void c ( int v ) {
+put v ;
+;
+return ;
 }
-void s ( bool y ) {
+else {
 }
-int main ( ) {
+}
 }
 ############### 11 ###############
-int main ( ) {
-int c = 8 ;
+char { ;
+void y ( float b , float v ) {
+put p ;
+;
+}
+void main ( ) {
 }
 ############### 12 ###############
-int main ( ) {
-int o = ~ 5 ;
-return ;
+void main ( ) {
+r = - k ;
+string u ;
+bool z = ~ s ;
+l = - z ;
 }
 ############### 13 ###############
-int main ( ) {
-return ;
-int s ;
+int r = ( - j ) ;
+string c ;
+void main ( ) {
 }
 ############### 14 ###############
-void w ( float a , bool b ) {
+void f ( float x , float m ) {
 }
-int main ( ) {
+void h ( string d ) {
+}
+void main ( ) {
 }
 ############### 15 ###############
-void d ( bool y , int j ) {
+void { ( bool n ) {
 }
-int main ( ) {
+void j ( int m , bool m ) {
+}
+void main ( ) {
 }
 ############### 16 ###############
-void x ( float l , bool e ) {
-}
-void u ( bool z ) {
+float j ;
+void s ( float h , float t ) {
 return ;
-a = ! a ;
+return ;
+bool d = - 7 ;
+put t ;
+;
 }
-void u ( int h ) {
-float u ;
-bool g ;
-}
-int main ( ) {
+void main ( ) {
 }
 ############### 17 ###############
-void n ( int w , bool j ) {
-}
-int main ( ) {
+string y = - m ;
+bool { ;
+void main ( ) {
 }
 ############### 18 ###############
-void y ( bool z , float n ) {
+void r ( int t ) {
 }
-void q ( bool f ) {
-bool w ;
+void p ( int q , float l ) {
 }
-int main ( ) {
+void main ( ) {
 }
 ############### 19 ###############
-void v ( int q ) {
+void x ( char g ) {
 }
-int main ( ) {
-int u ;
+void main ( ) {
 }
 ############### 20 ###############
-int main ( ) {
+char a ;
+void y ( int u , string i ) {
+}
+char m ;
+void main ( ) {
 }
 ############### 21 ###############
-void a ( float { , bool a ) {
-return ;
-r = - ( ! e > - 7 || - n ) ;
+char l = - ( ! a ) ;
+void t ( float d , bool o ) {
 }
-int main ( ) {
+void o ( string w , float p ) {
+}
+int r ;
+void main ( ) {
 }
 ############### 22 ###############
-int main ( ) {
-int q ;
-return ;
-int j ;
+string i = ~ ( ! 10 ) ;
+void main ( ) {
 }
 ############### 23 ###############
-void p ( int g ) {
-}
-void b ( float r , float h ) {
-return ;
-f = - a ;
-float o ;
-u = ! 1 ;
-return ;
-float c = ~ 3 ;
-}
-int main ( ) {
+float d = - ( 3 ) ;
+char o ;
+void main ( ) {
 }
 ############### 24 ###############
-void { ( bool s ) {
+void w ( bool k ) {
 }
-void e ( int g , float u ) {
-}
-int main ( ) {
+void main ( ) {
 }
 ############### 25 ###############
-int main ( ) {
-r = ! 2 ;
+int l ;
+void v ( char y , char j ) {
+}
+void main ( ) {
 }
 ############### 26 ###############
-void l ( bool a , float m ) {
-return ;
-return ;
-s = ! t ;
+char e ;
+void b ( bool v , float x ) {
 }
-int main ( ) {
-int x ;
+void b ( string k ) {
+}
+void z ( char i , bool i ) {
+}
+string m ;
+void main ( ) {
 }
 ############### 27 ###############
-void e ( float o ) {
-}
-int main ( ) {
+string g = ( ~ k ) ;
+void main ( ) {
 }
 ############### 28 ###############
-void i ( int v , float m ) {
-return ;
-z = ~ b ;
-int u = - d ;
-e = ( - l ) ;
-int j ;
+void c ( int { ) {
 }
-int main ( ) {
-l = ~ ( ~ ( 4 ) ) ;
-return ;
-r = ~ w ;
+void b ( int n ) {
+}
+float s ;
+void main ( ) {
 }
 ############### 29 ###############
-void e ( bool t , float z ) {
-}
-void t ( int m , float o ) {
-bool q ;
-s = ! ( y ) ;
-}
-int main ( ) {
+bool s = ! u ;
+void main ( ) {
 }
 ############### 30 ###############
-int main ( ) {
-bool m ;
-return ;
+void h ( char t , string s ) {
+}
+void { ( float i , char s ) {
+while ( ~ n && ~ 0 ) {
+continue ;
+}
+}
+void main ( ) {
 }
 ############### 31 ###############
-void x ( bool y ) {
+float q ;
+void g ( float n ) {
+bool a ;
+string { ;
 }
-int main ( ) {
-d = ~ w ;
+float p ;
+void main ( ) {
 }
 ############### 32 ###############
-void s ( bool a , bool w ) {
+void z ( char c ) {
 }
-void k ( int e , bool c ) {
-int i = - 1 ;
-}
-void { ( bool { , int { ) {
-return ;
-return ;
-float m ;
-bool b = ! c ;
-}
-int main ( ) {
+int j = ! 1 || ~ b > 6 ;
+void main ( ) {
 }
 ############### 33 ###############
-void q ( bool e , float v ) {
+float e ;
+void g ( float p , int q ) {
 }
-void r ( int e ) {
-}
-int main ( ) {
+string f = - ( { ) ;
+void main ( ) {
 }
 ############### 34 ###############
-int main ( ) {
-float z ;
+void q ( int n ) {
+}
+void main ( ) {
 }
 ############### 35 ###############
-void i ( float e ) {
-float d ;
-}
-int main ( ) {
+float g ;
+bool r = ~ m ;
+void main ( ) {
 }
 ############### 36 ###############
-int main ( ) {
-p = - 1 ;
+float g = ( 10 ) ;
+void main ( ) {
 }
 ############### 37 ###############
-void w ( int e ) {
+void p ( bool p , int l ) {
 }
-void d ( int q , bool m ) {
-return ;
-u = ~ ( ~ 4 ) ;
-return ;
-}
-int main ( ) {
-return ;
+void main ( ) {
 }
 ############### 38 ###############
-void p ( bool g , bool h ) {
-}
-int main ( ) {
+int e = ! m ;
+void main ( ) {
 }
 ############### 39 ###############
-int main ( ) {
-f = i ;
-return ;
+float a = - h ;
+void main ( ) {
 }
 ############### 40 ###############
-void i ( float b ) {
-}
-int main ( ) {
+char z ;
+char k = ! k ;
+void main ( ) {
 }
 ############### 41 ###############
-void b ( bool v ) {
-}
-int main ( ) {
-j = ~ ( 1 ) ;
-bool { ;
+void main ( ) {
 }
 ############### 42 ###############
-void o ( int p ) {
+void u ( string d , bool i ) {
+for ( put l ;
+;
+- 6 ;
+put p ;
+) {
+break ;
 }
-void r ( bool g ) {
 }
-int main ( ) {
+void m ( float p , int g ) {
+}
+void main ( ) {
 }
 ############### 43 ###############
-int main ( ) {
-return ;
+char s ;
+int o = - y ;
+void main ( ) {
 }
 ############### 44 ###############
-int main ( ) {
-b = y ;
-return ;
+string v ;
+void j ( string b , bool g ) {
+}
+void r ( string v ) {
+}
+void main ( ) {
 }
 ############### 45 ###############
-int main ( ) {
-return ;
-w = c ;
-return ;
+string o ;
+void main ( ) {
+while ( ! 3 ) {
+break ;
+}
 }
 ############### 46 ###############
-void a ( bool w , bool a ) {
-return ;
-d = - 1 ;
-return ;
-}
-int main ( ) {
+char x ;
+void main ( ) {
 }
 ############### 47 ###############
-void s ( float { ) {
-float a ;
-}
-void v ( int { , float t ) {
-}
-void q ( int p , bool u ) {
-r = ~ 10 && - u || - ( g ) ;
-}
-int main ( ) {
-return ;
+int m ;
+void main ( ) {
 }
 ############### 48 ###############
-void a ( float g ) {
-}
-void f ( bool b , int b ) {
-}
-void b ( int u ) {
-}
-int main ( ) {
+bool r = ! u ;
+void main ( ) {
 }
 ############### 49 ###############
-void l ( bool j , bool j ) {
-}
-int main ( ) {
+void f ( bool t , string v ) {
 return ;
-bool o = - n ;
-bool q = 1 ;
-p = ~ 0 ;
+}
+float j ;
+void main ( ) {
+if ( - ( l && ! w ) ) {
+put q ;
+;
+bool g ;
+put i ;
+;
+}
+else {
+char b ;
+}
 }
 ############### 50 ###############
-void c ( int l ) {
-}
-void q ( bool l ) {
-return ;
-return ;
-return ;
-return ;
-int z ;
-float e = ! 9 ;
-return ;
-return ;
-}
-int main ( ) {
+string h = ~ ( l ) ;
+void main ( ) {
 }
 ############### 51 ###############
-void q ( int w ) {
-}
-int main ( ) {
-bool y = ! 0 ;
-int w ;
+bool a = ( ! e ) ;
+int g ;
+void main ( ) {
 }
 ############### 52 ###############
-int main ( ) {
-int t ;
+void l ( char i ) {
+}
+void d ( float u , float v ) {
+}
+void i ( float b , bool c ) {
+}
+void main ( ) {
 }
 ############### 53 ###############
-void r ( bool j ) {
-}
-int main ( ) {
+string v ;
+void main ( ) {
 }
 ############### 54 ###############
-int main ( ) {
-y = 5 ;
-return ;
+int q ;
+void k ( bool f ) {
+}
+void v ( char j ) {
+}
+void main ( ) {
+}
+############### 55 ###############
+void main ( ) {
+string m ;
+}
+############### 56 ###############
+float g ;
+string w ;
+void main ( ) {
+}
+############### 57 ###############
+void main ( ) {
+put 8 ;
+;
+bool a ;
+}
+############### 58 ###############
+int g ;
+void main ( ) {
+while ( f ) {
+break ;
+}
+for ( j = - 5 ;
+- { ;
+put 8 ;
+) {
+break ;
+}
+}
+############### 59 ###############
+bool m = ! q ;
+void main ( ) {
 }
