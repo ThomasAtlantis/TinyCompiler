@@ -1,398 +1,435 @@
 ############### 0 ###############
-bool b = ( - 3 ) && ( 4 ) ;
-string z = ( ~ 1 ) ;
+void @FUNC ( char @B ) {
+}
 void main ( ) {
+@B = - @C_F ;
+return ;
+return ;
 }
 ############### 1 ###############
-bool z = - 3 ;
+void @FUNC ( int @I ) {
+}
+void @FUNC ( float & @B ) {
+int @A [ @I ] ;
+float @B ;
+int @A [ @C_I ] ;
+}
+char @A [ @I ] ;
 void main ( ) {
 }
 ############### 2 ###############
-float h ;
-char x ;
+void @FUNC ( char @I ) {
+}
 void main ( ) {
-for ( n = 7 ;
-1 ;
-return ) {
-break ;
-}
-while ( ( ! 1 ) ) {
-continue ;
-q = ~ 8 ;
-}
 }
 ############### 3 ###############
-bool h = 3 ;
-void p ( string g , string t ) {
+float @A [ @C_I ] ;
+void @FUNC ( bool @B ) {
 }
-int c ;
 void main ( ) {
-return ;
-b = ! 2 ;
-int i ;
 }
 ############### 4 ###############
-float i ;
+char @B = ! @I ;
+struct @T @S ;
 void main ( ) {
 }
 ############### 5 ###############
-string v = ~ ( ~ i || ( o ) || - ( ! p ) == ! 6 ) ;
+char @A [ @I ] ;
+char @A [ @I ] ;
 void main ( ) {
 }
 ############### 6 ###############
-float d = ~ m ;
+void @FUNC ( int & @I , float & @S ) {
+}
+struct @T @S ;
 void main ( ) {
 }
 ############### 7 ###############
-char l ;
+char @B ;
+bool @A [ @I ] ;
 void main ( ) {
+while ( ~ @I ) {
+struct @T @S ;
+break ;
+}
 }
 ############### 8 ###############
-void v ( float u , float m ) {
-}
-void s ( int g ) {
-}
 void main ( ) {
+char @B ;
 }
 ############### 9 ###############
-int { ;
+float @A [ @I ] ;
+void @FUNC ( bool @B ) {
+}
+void @FUNC ( bool @A [ @C_I ] , bool & @S ) {
+}
+void @FUNC ( float @A [ @C_I ] , int & @B ) {
+}
+struct @T @S ;
 void main ( ) {
 }
 ############### 10 ###############
-bool z = 10 ;
-void c ( char b ) {
+bool @A [ @C_I ] ;
+void @FUNC ( float @A [ @I ] ) {
 }
+struct @T @S ;
 void main ( ) {
-while ( f ) {
-return ;
-continue ;
-return ;
-return ;
-if ( ( ~ m ) ) {
-if ( ! ( ! p ) && - 0 && i && ~ ( ! n ) >= 10 ) {
-}
-put v ;
-;
-return ;
-}
-else {
-}
-}
 }
 ############### 11 ###############
-char { ;
-void y ( float b , float v ) {
-put p ;
-;
-}
+int @A [ @C_I ] ;
 void main ( ) {
+@I = ~ @F == ! @I ;
+return ;
+return ;
+put @CH ;
+for ( ;
+;
+struct @T {
+bool @A [ @C_I ] ;
+}
+) {
+continue ;
+return ;
+struct @T {
+int @A [ @I ] ;
+}
+;
+return ;
+return ;
+@F = ! ( ! @S ) ;
+put @CH ;
+put @CH ;
+@B = - @C ;
+}
 }
 ############### 12 ###############
+struct @T @S ;
+int @A [ @I ] ;
 void main ( ) {
-r = - k ;
-string u ;
-bool z = ~ s ;
-l = - z ;
 }
 ############### 13 ###############
-int r = ( - j ) ;
-string c ;
+char @F = @A [ @C_I ] ;
+void @FUNC ( bool & @I ) {
+}
 void main ( ) {
 }
 ############### 14 ###############
-void f ( float x , float m ) {
+void @FUNC ( float @B ) {
+struct @T @S ;
 }
-void h ( string d ) {
-}
+float @A [ @I ] ;
 void main ( ) {
+put @C_CH ;
+struct @T {
+float @A [ @C_I ] ;
+struct @T @S ;
+}
+;
+put @C_S ;
 }
 ############### 15 ###############
-void { ( bool n ) {
-}
-void j ( int m , bool m ) {
-}
+struct @T @S ;
+struct @T @S ;
 void main ( ) {
 }
 ############### 16 ###############
-float j ;
-void s ( float h , float t ) {
-return ;
-return ;
-bool d = - 7 ;
-put t ;
-;
+bool @A [ @C_I ] ;
+void @FUNC ( float & @B , char @I ) {
+bool @A [ @I ] ;
 }
+struct @T @S ;
 void main ( ) {
 }
 ############### 17 ###############
-string y = - m ;
-bool { ;
+void @FUNC ( int & @I , char & @S ) {
+}
+float @F ;
 void main ( ) {
 }
 ############### 18 ###############
-void r ( int t ) {
-}
-void p ( int q , float l ) {
-}
+float @A [ @I ] ;
+bool @I ;
 void main ( ) {
 }
 ############### 19 ###############
-void x ( char g ) {
-}
+char @F ;
 void main ( ) {
 }
 ############### 20 ###############
-char a ;
-void y ( int u , string i ) {
-}
-char m ;
+char @A [ @C_I ] ;
 void main ( ) {
 }
 ############### 21 ###############
-char l = - ( ! a ) ;
-void t ( float d , bool o ) {
+void @FUNC ( float & @A [ @I ] , bool @B ) {
 }
-void o ( string w , float p ) {
-}
-int r ;
+char @A [ @C_I ] ;
 void main ( ) {
 }
 ############### 22 ###############
-string i = ~ ( ! 10 ) ;
+float @A [ @C_I ] ;
+void @FUNC ( char & @B ) {
+}
+void @FUNC ( float @A [ @I ] ) {
+}
+void @FUNC ( float & @F ) {
+}
+int @A [ @I ] ;
 void main ( ) {
 }
 ############### 23 ###############
-float d = - ( 3 ) ;
-char o ;
+struct @T @S ;
 void main ( ) {
+return ;
+@I = - @C_I ;
 }
 ############### 24 ###############
-void w ( bool k ) {
+void @FUNC ( int @F , bool @I ) {
 }
+void @FUNC ( char & @F , int & @I ) {
+}
+bool @F ;
 void main ( ) {
 }
 ############### 25 ###############
-int l ;
-void v ( char y , char j ) {
-}
+int @A [ @C_I ] ;
 void main ( ) {
 }
 ############### 26 ###############
-char e ;
-void b ( bool v , float x ) {
+void @FUNC ( float & @A [ @I ] ) {
 }
-void b ( string k ) {
-}
-void z ( char i , bool i ) {
-}
-string m ;
 void main ( ) {
+if ( - ( true ) ) {
+}
 }
 ############### 27 ###############
-string g = ( ~ k ) ;
+float @F ;
 void main ( ) {
 }
 ############### 28 ###############
-void c ( int { ) {
-}
-void b ( int n ) {
-}
-float s ;
+int @F = - ( ( - @C ) ) ;
 void main ( ) {
 }
 ############### 29 ###############
-bool s = ! u ;
+char @A [ @I ] ;
 void main ( ) {
 }
 ############### 30 ###############
-void h ( char t , string s ) {
-}
-void { ( float i , char s ) {
-while ( ~ n && ~ 0 ) {
-continue ;
-}
-}
+float @I = @C_F ;
+struct @T @S ;
 void main ( ) {
 }
 ############### 31 ###############
-float q ;
-void g ( float n ) {
-bool a ;
-string { ;
-}
-float p ;
+struct @T @S ;
 void main ( ) {
+put @CH ;
+put @C_CH ;
+put @C_CH ;
+struct @T {
+struct @T @S ;
+}
+;
+struct @T {
+bool @A [ @C_I ] ;
+bool @F ;
+bool @B ;
+}
+;
 }
 ############### 32 ###############
-void z ( char c ) {
-}
-int j = ! 1 || ~ b > 6 ;
+int @A [ @I ] ;
+bool @A [ @I ] ;
 void main ( ) {
 }
 ############### 33 ###############
-float e ;
-void g ( float p , int q ) {
+void @FUNC ( bool @S , float & @B ) {
 }
-string f = - ( { ) ;
 void main ( ) {
 }
 ############### 34 ###############
-void q ( int n ) {
-}
+float @I = ~ @C_I ;
 void main ( ) {
 }
 ############### 35 ###############
-float g ;
-bool r = ~ m ;
+char @A [ @I ] ;
+void @FUNC ( bool @S , char @I ) {
+if ( ! @B ) {
+}
+return ;
+put @C_CH ;
+struct @T {
+bool @F ;
+struct @T @S ;
+}
+;
+}
+void @FUNC ( char & @I ) {
+}
+void @FUNC ( float @F , float & @B ) {
+}
+void @FUNC ( float @I , bool & @I ) {
+}
+bool @A [ @I ] ;
 void main ( ) {
+@S = true ;
 }
 ############### 36 ###############
-float g = ( 10 ) ;
+void @FUNC ( bool & @S , int & @B ) {
+}
 void main ( ) {
 }
 ############### 37 ###############
-void p ( bool p , int l ) {
-}
 void main ( ) {
 }
 ############### 38 ###############
-int e = ! m ;
+float @A [ @I ] ;
+void @FUNC ( bool @B ) {
+if ( - @F ) {
+}
+}
+void @FUNC ( float & @I , int @B ) {
+put @C_CH ;
+}
+void @FUNC ( float & @B , bool @I ) {
+}
+void @FUNC ( int @F , bool @S ) {
+}
 void main ( ) {
+struct @T {
+bool @A [ @I ] ;
+struct @T @S ;
+struct @T @S ;
+int @A [ @C_I ] ;
+}
+;
 }
 ############### 39 ###############
-float a = - h ;
+struct @T @S ;
+int @A [ @C_I ] ;
 void main ( ) {
 }
 ############### 40 ###############
-char z ;
-char k = ! k ;
+struct @T @S ;
 void main ( ) {
+while ( - false ) {
+continue ;
+}
 }
 ############### 41 ###############
+float @I = - @B ;
 void main ( ) {
 }
 ############### 42 ###############
-void u ( string d , bool i ) {
-for ( put l ;
-;
-- 6 ;
-put p ;
-) {
-break ;
-}
-}
-void m ( float p , int g ) {
-}
 void main ( ) {
+struct @T {
+struct @T @S ;
+}
+;
+float @A [ @I ] ;
 }
 ############### 43 ###############
-char s ;
-int o = - y ;
+void @FUNC ( float & @F , bool & @S ) {
+}
+struct @T @S ;
 void main ( ) {
 }
 ############### 44 ###############
-string v ;
-void j ( string b , bool g ) {
+struct @T @S ;
+void @FUNC ( bool & @S , int & @S ) {
 }
-void r ( string v ) {
+void @FUNC ( char @S ) {
 }
+void @FUNC ( char & @I ) {
+return ;
+}
+void @FUNC ( float @I , int @I ) {
+if ( ~ @C ) {
+}
+else if ( ~ @C ) {
+}
+else {
+}
+}
+void @FUNC ( char @I , bool & @A [ @I ] ) {
+return ;
+return ;
+put @C_CH ;
+struct @T @S ;
+return ;
+return ;
+bool @A [ @C_I ] ;
+return ;
+struct @T {
+bool @I ;
+float @A [ @C_I ] ;
+}
+;
+bool @A [ @I ] ;
+}
+struct @T @S ;
 void main ( ) {
 }
 ############### 45 ###############
-string o ;
+struct @T @S ;
 void main ( ) {
-while ( ! 3 ) {
-break ;
+if ( ! @C_F ) {
+put @C_CH ;
+struct @T {
+struct @T @S ;
+int @A [ @I ] ;
+bool @F ;
+}
+;
 }
 }
 ############### 46 ###############
-char x ;
+float @A [ @I ] ;
 void main ( ) {
 }
 ############### 47 ###############
-int m ;
+struct @T @S ;
+float @A [ @I ] ;
 void main ( ) {
+char @F ;
 }
 ############### 48 ###############
-bool r = ! u ;
+int @A [ @C_I ] ;
+char @B ;
 void main ( ) {
-}
-############### 49 ###############
-void f ( bool t , string v ) {
-return ;
-}
-float j ;
-void main ( ) {
-if ( - ( l && ! w ) ) {
-put q ;
-;
-bool g ;
-put i ;
-;
+if ( ~ @I ) {
 }
 else {
-char b ;
+return ;
 }
+}
+############### 49 ###############
+char @F ;
+void @FUNC ( bool & @F , int & @B ) {
+if ( - ( ! @C ) ) {
+}
+else {
+}
+}
+void @FUNC ( int & @B , float @I ) {
+}
+char @B = ! @S ;
+void main ( ) {
 }
 ############### 50 ###############
-string h = ~ ( l ) ;
+bool @A [ @I ] ;
+struct @T @S ;
 void main ( ) {
 }
 ############### 51 ###############
-bool a = ( ! e ) ;
-int g ;
+struct @T @S ;
 void main ( ) {
 }
 ############### 52 ###############
-void l ( char i ) {
-}
-void d ( float u , float v ) {
-}
-void i ( float b , bool c ) {
-}
+float @A [ @I ] ;
+struct @T @S ;
 void main ( ) {
 }
 ############### 53 ###############
-string v ;
-void main ( ) {
-}
-############### 54 ###############
-int q ;
-void k ( bool f ) {
-}
-void v ( char j ) {
-}
-void main ( ) {
-}
-############### 55 ###############
-void main ( ) {
-string m ;
-}
-############### 56 ###############
-float g ;
-string w ;
-void main ( ) {
-}
-############### 57 ###############
-void main ( ) {
-put 8 ;
-;
-bool a ;
-}
-############### 58 ###############
-int g ;
-void main ( ) {
-while ( f ) {
-break ;
-}
-for ( j = - 5 ;
-- { ;
-put 8 ;
-) {
-break ;
-}
-}
-############### 59 ###############
-bool m = ! q ;
+bool @A [ @C_I ] ;
+struct @T @S ;
 void main ( ) {
 }
