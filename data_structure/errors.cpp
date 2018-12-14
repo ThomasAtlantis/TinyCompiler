@@ -7,7 +7,8 @@
 const string Errors::syntax_error[] = {
     "Syntax Error: incorrect character",
     "Syntax Error: incorrect character string",
-    "Syntax Error: incorrect constant"
+    "Syntax Error: incorrect constant",
+    "Syntax Error: wrong expression"
 };
 const string Errors::symbol_error[] = {
     "Symbol Error: incorrect delimiters",

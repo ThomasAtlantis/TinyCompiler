@@ -6,14 +6,14 @@
 
 int find(vector<Tables::Number*> nums, Tables::Number* key) {
     for (unsigned int index = 0; index < nums.size(); index++)
-        if (*nums[index] == *key) return index;
+        if (nums[index] == key) return index;
     return -1;
 }
 
 void print_qs(vector<Quarternary>& Qs) {
     vector<Tables::Number*> points;
     for (auto &Q : Qs) {
-        cout << "(" << Q.op << ", ";
+        cout << "(" << setw(8) << left << Q.op << ", ";
         int it_1 = find(points, Q.a);
         int it_2 = find(points, Q.b);
         if (it_1 == -1) cout << setw(8) << left << *(Q.a) << ", ";

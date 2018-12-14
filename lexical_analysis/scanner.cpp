@@ -58,7 +58,7 @@ Scanner::Scanner_ret Scanner::Scanner::scan_next() {
 
     // 识别算术常数，填tables.CT表
     else if (is_digit(current_char)) {
-        Tables::Number num;
+        auto * num = new Tables::Number;
         Tables::Num_type type;
         curr_index --;
         if (p_number.process(curr_index, num, type)) {

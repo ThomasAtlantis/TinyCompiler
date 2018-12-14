@@ -21,4 +21,36 @@ public:
     static const string symbol_error[];
 };
 
+class ScannerException: public exception {
+private:
+    int line_label;
+    string log;
+public:
+    ScannerException(int line_label, string log) {
+        this->line_label = line_label;
+        this->log = std::move(log);
+    }
+    ~ScannerException() noexcept override = default;
+
+    const char* what() const noexcept override {
+        return ("(" + to_string(line_label) + ") " + log).c_str();
+    }
+};
+
+class SyntaxException: public exception {
+private:
+    int line_label;
+    string log;
+public:
+    SyntaxException(int line_label, string log) {
+        this->line_label = line_label;
+        this->log = std::move(log);
+    }
+    ~SyntaxException() noexcept override = default;
+
+    const char* what() const noexcept override {
+        return ("(" + to_string(line_label) + ") " + log).c_str();
+    }
+};
+
 #endif //COMPILE_ERRORS_H

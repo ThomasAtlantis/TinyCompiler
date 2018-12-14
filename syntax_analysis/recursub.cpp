@@ -3,8 +3,10 @@
 //
 
 #include "recursub.h"
+#include "../lexical_analysis/scanner.h"
+#include "../data_structure/tables.h"
 
-Recursub::Recursub(Grammar& G): G(G) {
+Recursub::Recursub(Grammar& G, Scanner& sc): G(G), scanner(sc) {
     available = is_available();
 }
 
@@ -36,6 +38,7 @@ bool Recursub::is_available() {
 }
 
 string Recursub::token2str(Token token) {
+    this->token = token;
     string w;
     switch (token.kind) {
         case 'K': w = G.tables.KT[token.index]; break;
@@ -44,44 +47,37 @@ string Recursub::token2str(Token token) {
         case 'C': w = "/C"; break;
         case 'c': w = G.tables.cT[token.index]; break;
         case 'S': w = G.tables.ST[token.index]; break;
-        case '#': w = "#"; break;
         default: break;
     }
     return w;
 }
 
-// TODO: get token from scanner.scan_next() in subprogram
-
-bool Recursub::subprogram(
-    vector<Token>& tokens,
-    string left,
-    vector<Quarternary>& Qs,
-    vector<Tables::Number*>& operands,
-    vector<int>& layers
-) {
+bool Recursub::subprogram(string left) {
     auto p = Grammar::G.find(left);
+
+    // 查看以left为左部的产生式中是否包含空，即left是否可以推出空
     bool epsilon_flag = false;
     for (auto rl: p->second) {
         if (rl.size() == 1 && rl.front() == "epsilon") epsilon_flag = true;
     }
-    for (auto rl: p->second) {
-        set<string> select = G.select_set_of(p->first, rl);
-        string w = token2str(tokens.front());
-        if (!select.count(w)) continue;
+
+    for (auto rl: p->second) { // 遍历以left为左部的所有产生式
+        set<string> select = G.select_set_of(p->first, rl); // 计算产生式的select集
+        if (!select.count(w)) continue; // 如果产生式的select集不包含w，则遍历下一个产生式
         Token token_sav;
-        for (auto rs: rl) {
-            if (G.symbol_type(rs) == 1) {
-                if (!subprogram(tokens, rs, Qs, operands, layers)) return false;
-                w = token2str(tokens.front());
-            } else {
+        for (auto rs: rl) { // 遍历产生右部的每个符号
+            if (G.symbol_type(rs) == 1) { // 如果符号为非终结符
+                if (!subprogram(rs)) return false;
+            } else { // 如果符号为终结符或空或翻译文法符号
                 if (rs.find("qua") == 0) {
                     char operat = rs[3];
                     if (operat == 'p') {
-                        operands.push_back(&G.tables.CT[token_sav.index]);
+                        operands.push_back(G.tables.CT[token_sav.index]);
                     } else if (operat == '.') {
                         auto * res_1 = new Tables::Number;
                         auto * res_2 = operands.back();
                         auto * res = new Tables::Number;
+                        res_1->type = Tables::INTEGER;
                         res_1->value.i = 0;
                         operands.pop_back();
                         Quarternary Q = {'-', res_1, res_2, res};
@@ -97,12 +93,17 @@ bool Recursub::subprogram(
                         Qs.push_back(Q);
                         operands.push_back(res);
                     }
-                    continue;
+                    continue; // 如果是翻译文法符号，则遍历下一个符号
                 }
-                if (w == rs) {
-                    token_sav = tokens.front();
-                    tokens.erase(tokens.begin());
-                } else if (!epsilon_flag) return false;
+                if (w == rs) { // 如果是终结符且与token对应字符串匹配
+                    token_sav = this->token;
+                    Scanner::Scanner_ret sr = scanner.scan_next();
+                    if (sr.error_m.type == Errors::error)
+                        throw SyntaxException(scanner.get_line(), sr.error_m.log);
+                    w = token2str(sr.token); // 取下一个token，转为字符串以匹配文法
+                } else if (!epsilon_flag) {
+                    return false; // 如果都不满足，且left不可推出空，则报错
+                }
             }
         }
         break;
@@ -111,17 +112,14 @@ bool Recursub::subprogram(
 }
 
 
-vector<Quarternary> Recursub::check_trans(vector<Token> tokens) {
-    Token token = {'#', 0};
-    tokens.push_back(token);
+vector<Quarternary> Recursub::check_trans() {
     vector<int> layers = {1};
-    vector<Quarternary> Qs;
     vector<Quarternary> error;
-    vector<Tables::Number*> operands;
-    if (subprogram(tokens, Grammar::S, Qs, operands, layers)) {
+    Scanner::Scanner_ret sr = scanner.scan_next();
+    if (sr.error_m.type == Errors::error)
+        throw SyntaxException(scanner.get_line(), sr.error_m.log);
+    w = token2str(sr.token); // 取下一个token，转为字符串以匹配文法
+    if (subprogram(Grammar::S)) {
         return Qs;
-    } else {
-        cout << "Syntax Error(?): wrong experession" << endl;
-        return error;
-    }
+    } else throw SyntaxException(-1, Errors::syntax_error[3]);
 }

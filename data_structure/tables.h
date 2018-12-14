@@ -24,7 +24,7 @@ public:
     vector<string> IT;
     vector<Charac> cT;
     vector<string> ST;
-    vector<Number> CT;
+    vector<Number*> CT;
     Tables();
     ~Tables();
 };

@@ -28,23 +28,16 @@ int main() {
     source_file.close();
 
     Scanner scanner(buffer, tables);
-    Scanner::Scanner_ret sg;
-    vector<Token> tokens;
-    sg = scanner.scan_next();
-    while (sg.error_m.type != Errors::eof) {
-        if (sg.error_m.type == Errors::error) {
-            cout << file_name << "(" << scanner.get_line() << "): " << sg.error_m.log << endl;
-            return 0;
-        } else if (sg.error_m.type == Errors::clear) {
-            tokens.push_back(sg.token);
-        }
-        sg = scanner.scan_next();
-    }
+    Recursub recursub(grammar, scanner);
 
-    Recursub recursub(grammar);
     if (recursub.available) {
-        vector<Quarternary> Qs = recursub.check_trans(tokens);
-        print_qs(Qs);
+        try {
+            vector<Quarternary> Qs = recursub.check_trans();
+            print_qs(Qs);
+        } catch (SyntaxException e) {
+            cout << e.what() << endl;
+        }
+
     }
 
     return 0;

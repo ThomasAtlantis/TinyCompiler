@@ -5,29 +5,30 @@
 #ifndef COMPILE_RECURSUB_H
 #define COMPILE_RECURSUB_H
 
+#include <utility>
 #include "../utility/utility.h"
 #include "../data_structure/data_structure.h"
+#include "../lexical_analysis/scanner.h"
 
 class Recursub {
 private:
     Grammar& G;
+    Scanner& scanner;
+    string w;
+    Token token;
+    vector<Tables::Number*> operands;
+    vector<Quarternary> Qs;
     bool is_available();
-    bool subprogram(
-            vector<Token>& tokens,
-            string left,
-            vector<Quarternary>& Qs,
-            vector<Tables::Number*>& operands,
-            vector<int>& layers
-    );
+    bool subprogram(string left);
     string token2str(Token token);
 
 public:
     bool available;
 
-    Recursub(Grammar& G);
+    Recursub(Grammar& G, Scanner& scanner);
     ~Recursub();
 
-    vector<Quarternary> check_trans(vector<Token> tokens);
+    vector<Quarternary> check_trans();
 };
 
 #endif //COMPILE_RECURSUB_H
