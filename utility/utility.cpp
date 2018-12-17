@@ -17,6 +17,15 @@ vector<string> split(const string& str, const string& sep) {
     return vec;
 }
 
+string join(vector<string> vec, const string& sep) {
+    if (vec.size() == 1) return vec.front();
+    string result = vec.front();
+    for_each(vec.begin() + 1, vec.end(), [&](string str){
+        result = result + sep + str;
+    });
+    return result;
+}
+
 ostream& operator<<(ostream& out, vector<string> vec) {
     for (const auto &str: vec) out << str << " ";
     return out;

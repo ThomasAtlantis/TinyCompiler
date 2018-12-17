@@ -27,6 +27,7 @@
 using namespace std;
 
 vector<string> split(const string& str, const string& sep = " ");
+string join(vector<string> vec, const string& sep = " ");
 ostream& operator<<(ostream& out, vector<string> vec);
 ostream& operator<<(ostream& out, set<string> st);
 

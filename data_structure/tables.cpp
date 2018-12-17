@@ -6,10 +6,10 @@
 
 Tables::Tables() {
     KT = { // 预留关键字表
-            "char", "double", "enum", "float", "int", "long", "short", "signed", "struct", "union",
+            "main", "char", "double", "enum", "float", "int", "long", "short", "signed", "struct", "union",
             "unsigned", "void", "for", "do", "while", "break", "continue", "if", "else", "goto",
             "switch", "case", "default ", "return", "auto", "extern", "register", "static", "const",
-            "sizeof", "typedef", "volatile"
+            "sizeof", "typedef", "volatile", "putc", "puts"
     };
     PT = { // 界符表
             "#", "+", "-", "*", "/", "=", ">", "<", ",", ".", "&", "|", "!", "^", ";", "{", "}", "[",

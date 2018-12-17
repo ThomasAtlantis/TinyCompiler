@@ -3,6 +3,7 @@
 //
 
 #include "grammar.h"
+#include <utility>
 
 Grammar::Productions Grammar::G;
 string Grammar::S;
@@ -17,7 +18,7 @@ Grammar::~Grammar() = default;
 
 // 设置文法开始符号`开始符号
 void Grammar::set_start(string start) {
-    Grammar::S = start;
+    Grammar::S = std::move(start);
 }
 
 Grammar::ProductionAdder Grammar::add(string left) {

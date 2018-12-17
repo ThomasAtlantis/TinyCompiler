@@ -25,7 +25,7 @@ bool Recursub::is_available() {
                 size_t old_size = s.size();
                 s.insert(tmp.begin(), tmp.end());
                 if (s.size() < old_size + tmp.size()) {
-                    cout << "Intersactive Select-set" << endl;
+                    cout << "Intersactive Select-set:" << iter_1.first << " -> " << iter_2 << endl;
                     return false;
                 }
             }
@@ -43,10 +43,10 @@ string Recursub::token2str(Token token) {
     switch (token.kind) {
         case 'K': w = G.tables.KT[token.index]; break;
         case 'P': w = G.tables.PT[token.index]; break;
-        case 'I': w = "/I"; break;
-        case 'C': w = "/C"; break;
-        case 'c': w = G.tables.cT[token.index]; break;
-        case 'S': w = G.tables.ST[token.index]; break;
+        case 'I': w = "@I"; break;
+        case 'C': w = (G.tables.CT[token.index])->type == Tables::INTEGER ? "@INT" : "@FLT"; break;
+        case 'c': w = "@CH"; break;
+        case 'S': w = "@STR"; break;
         default: break;
     }
     return w;
@@ -58,7 +58,7 @@ bool Recursub::subprogram(string left) {
     // 查看以left为左部的产生式中是否包含空，即left是否可以推出空
     bool epsilon_flag = false;
     for (auto rl: p->second) {
-        if (rl.size() == 1 && rl.front() == "epsilon") epsilon_flag = true;
+        if (rl.size() == 1 && rl.front() == Grammar::null) epsilon_flag = true;
     }
 
     for (auto rl: p->second) { // 遍历以left为左部的所有产生式
