@@ -82,17 +82,12 @@ Token Scanner::Scanner::scan_next() {
                 token.kind = "K";
                 token.index = size_t(index - tables.KT.begin());
             } else {
-                // if (!tables.IT.empty()) index = find(all(tables.IT), tmp);
                 token.kind = "I";
                 token.index = 0;
-                /*
-                if (tables.IT.empty() || index == tables.IT.end()) {
-                    tables.IT.push_back(tmp);
-                    token.index = tables.IT.size() - 1;
-                } else {
-                    token.index = size_t(index - tables.IT.begin());
+                auto * synbl_v = tables.search(tables.synbl_cur->child, tmp);
+                if (synbl_v == nullptr) {
+                    tables.add(tables.synbl_cur->child, tmp);
                 }
-                */
             }
         }
         curr_index --;

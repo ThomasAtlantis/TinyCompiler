@@ -21,7 +21,7 @@ int main() {
     //*
     grammar.set_start("A0");
     grammar.add("A0") >> "A1";
-    grammar.add("A1") >> "void main ( ) { A2 }";
+    grammar.add("A1") >> "void main ( ) { qua_new_synbl A2 }";
     grammar.add("A2") >> "A3 A2" | "null" | "A4 A2";
     grammar.add("A3") >> "A5" | "A6" | "A7";
     grammar.add("A5") >> "A8 ;";

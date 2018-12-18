@@ -229,8 +229,13 @@ vector<Quarternary> LL1::check_trans() {
                     operands.push_back(res);
                 }
 
+                // main后左花括号新建符号表
+                else if (operat == "_new_synbl") {
+                    G.tables.new_synbl("main");
+                }
+
                 // 对于其他二元运算
-                else {
+                else if (operat == "+" or operat == "-" or operat == "*" or operat == "/") {
                     auto * res_2 = operands.back();
                     operands.pop_back();
                     auto * res_1 = operands.back();

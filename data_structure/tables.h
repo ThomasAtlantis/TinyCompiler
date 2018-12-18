@@ -19,7 +19,6 @@ public:
     typedef struct ainel AINEL;
     typedef struct rinel RINEL;
     typedef struct pfinfl PFINFL;
-    typedef struct synbl_v SYNBL_V;
     typedef struct vector<size_t> LENL;
     typedef struct vall VALL;
     typedef struct param PARAM;
@@ -62,12 +61,12 @@ public:
         } tptr;
     }; // 类型表
 
-    struct synbl_v {
+    typedef struct {
         string src;
         TYPEL* type;
         CATE cate;
         void* addr;
-    }; // 符号表主表值
+    } SYNBL_V; // 符号表主表值
 
     typedef vector<SYNBL_V*> SYNBL; // 符号表主表，以单词源码为索引的字典
 
@@ -80,9 +79,16 @@ public:
         } value;
     } Number;
 
-    map<string, SYNBL*> synbl_list;
+    typedef struct {
+        SYNBL* child;
+        SYNBL* parent;
+        size_t index;
+        size_s level;
+    } SYNBL_DICT_V;
 
-    SYNBL* synbl_cur;
+    map<string, SYNBL_DICT_V> synbl_dict;
+
+    SYNBL_DICT_V* synbl_cur;
 
     vector<string> KT;  // 关键字表
     vector<string> PT;  // 界符表
@@ -91,6 +97,12 @@ public:
     vector<Number*> CT; // 数值常量表
     Tables();
     ~Tables();
+
+    void new_synbl(string name);
+
+    SYNBL_V* search(SYNBL* table, string src);
+
+    void add(SYNBL* table, string& src);
 };
 
 ostream& operator<<(ostream& out, Tables::Number n);
