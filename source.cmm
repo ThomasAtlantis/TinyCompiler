@@ -1,9 +1,20 @@
 void main() {
-    if (a>3) {
-        int a[3];
-    } else if (a > 4) {
-        float c[4];
-        char m[3];
-        int b = 3*5.2;
+    while (1) {
+        int a = 10*3;
+        for (int i = 0; i < 10; i = 8 + 1) {
+            if (i == 3) {
+                continue;
+            } else if (i == 5) {
+                break;
+            }
+        }
+        //333*1+1
+        int b = 2+4;
+        if (b == 5) {
+            while(1){}
+        } else {
+            /*没毛病
+            */continue;
+        }
     }
 }

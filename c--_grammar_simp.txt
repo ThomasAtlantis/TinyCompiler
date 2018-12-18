@@ -1,26 +1,26 @@
 A0 -> A1
 A1 -> void main ( ) { A2 }
-A2 -> A3 A2 | null
-A3 -> A4 | A5 | A6
-A4 -> A7 ;
-A6 -> if ( A8 ) { A2 } A9
-A9 -> else B0 | null
-B0 -> { A2 } | A6
-A5 -> while ( A8 ) { A2 B1 A2 }
-A5 -> for ( B2 ; B3 ; B4 ) { A2 B1 A2 }
-B2 -> A7 | null
-B3 -> A8 | null
-B4 -> A7 | null
-B1 -> continue ; | break ;
+A2 -> A3 A2 | null | A4 A2
+A3 -> A5 | A6 | A7
+A5 -> A8 ;
+A7 -> if ( A9 ) { A2 } B0
+B0 -> else B1 | null
+B1 -> { A2 } | A7
+A6 -> while ( A9 ) { A2 }
+A6 -> for ( B2 ; B3 ; B4 ) { A2 }
+B2 -> A8 | null
+B3 -> A9 | null
+B4 -> A8 | null
+A4 -> continue ; | break ;
 B5 -> putc B6 | puts B7
 B6 -> B8 | B9
-C0 -> = A8 | null
-C1 -> C2 = A8
+C0 -> = A9 | null
+C1 -> C2 = A9
 C3 -> return
 C4 -> int | float | bool | char
 C5 -> @C
 C2 -> B8 C6
-A8 -> C7
+A9 -> C7
 C7 -> C8 C9
 C9 -> > C8 | >= C8 | < C8 | <= C8 | == C8 | != C8 | null
 C8 -> D0
@@ -31,8 +31,8 @@ D2 -> D4 D5
 D5 -> * D4 qua* D5 | / D4 qua/ D5 | null
 D4 -> D6
 D6 -> D7 | ! D7 | - D7
-D7 -> B8 C6 | C5 quap | ( A8 )
-A7 -> D8 | C1 | return | B5 | struct B8 D9
+D7 -> B8 C6 | C5 quap | ( A9 )
+A8 -> D8 | C1 | return | B5 | struct B8 D9
 D8 -> C4 E0
 E0 -> B8 E1
 E1 -> C0 | [ E2 ]

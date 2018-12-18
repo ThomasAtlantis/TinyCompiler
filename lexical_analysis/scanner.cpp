@@ -102,14 +102,17 @@ Scanner::Scanner_ret Scanner::Scanner::scan_next() {
     else {
         result.error_m.type = Errors::error; result.token.kind = 'P';
         result.error_m.log = Errors::symbol_error[0];
-        for (int i = 0; i < 3; i ++) {
-            if (curr_index + i > buffer.length()) break;
+
+        for (int i = 2; i >= 0; i --) {
+            if (curr_index + i > buffer.length()) continue;
             string key = buffer.substr(size_t(curr_index - 1), size_t(i + 1));
             auto index = find(all(tables.PT), key);
             if (index != tables.PT.end()) {
                 result.error_m.type = Errors::clear;
                 result.token.index = size_t(index - tables.PT.begin());
-            } else break;
+                curr_index += i;
+                break;
+            }
         }
         if (result.error_m.type == Errors::clear) {
             if (tables.PT[result.token.index] == "//") {

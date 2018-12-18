@@ -9,6 +9,8 @@
 #include "tables.h"
 
 class Grammar {
+private:
+    static vector<string> todos; // 储存当前待求非终结符
 public:
     // 类内类型定义
     typedef vector<string> Right_symbols;

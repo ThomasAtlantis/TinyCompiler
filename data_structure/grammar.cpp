@@ -3,7 +3,6 @@
 //
 
 #include "grammar.h"
-#include <utility>
 
 Grammar::Productions Grammar::G;
 string Grammar::S;
@@ -11,6 +10,7 @@ string Grammar::null = "null";
 string Grammar::bound = "#";
 map<string, set<string>> Grammar::firsts;
 map<string, set<string>> Grammar::follows;
+vector<string> Grammar::todos;
 
 Grammar::Grammar(Tables &t): tables(t) {}
 
@@ -84,7 +84,7 @@ set<string> Grammar::first_set_of(Grammar::Right_symbols x) {
             if (symbol == right.end()) first_set.insert(null);
         } else first_set.insert(f);
     }
-    if (x.size() == 1) firsts.insert(pair<string, set<string>>(x[0], first_set));
+    if (x.size() == 1 && !first_set.empty()) firsts.insert(pair<string, set<string>>(x[0], first_set));
     return first_set;
 }
 
@@ -108,12 +108,19 @@ set<string> Grammar::follow_set_of(string x) {
                 if (first.count(null)) follow_set.erase(null);
             }
             if (production.first != x && (where_x_is == right.end() - 1 || first.count(null))) {
+
+                if (find(all(todos), x) != todos.end()) continue;
+                todos.push_back(x);
+
                 set<string> follow = follow_set_of(production.first);
+
+                todos.pop_back();
+
                 follow_set.insert(follow.begin(), follow.end());
             }
         }
     }
-    follows.insert(pair<string, set<string>>(x, follow_set));
+    if (!follow_set.empty()) follows.insert(pair<string, set<string>>(x, follow_set));
     return follow_set;
 }
 
@@ -121,7 +128,7 @@ set<string> Grammar::select_set_of(string left, Grammar::Right_symbols right) {
     set<string> select = first_set_of(std::move(right));
     if (select.count(null)) {
         select.erase(null);
-        set<string> follow = follow_set_of(left);
+        set<string> follow = follow_set_of(std::move(left));
         select.insert(follow.begin(), follow.end());
     }
     return select;
