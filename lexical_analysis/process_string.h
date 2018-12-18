@@ -15,7 +15,7 @@ private:
 public:
     explicit P_string(string& buffer);
 
-    bool process(int& cur_index, string& str);
+    bool process(size_t& cur_index, string& str);
 };
 
 #endif //COMPILE_PROCESS_STRING_H

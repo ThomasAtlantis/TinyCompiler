@@ -15,7 +15,7 @@ private:
 public:
     explicit P_charac(string& buffer);
 
-    bool process(int& cur_index, char& ch);
+    bool process(size_t& cur_index, char& ch);
 };
 
 #endif //COMPILE_PROCESS_CHARACTER_H

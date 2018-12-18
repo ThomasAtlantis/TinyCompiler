@@ -14,3 +14,9 @@ const string Errors::symbol_error[] = {
     "Symbol Error: incorrect delimiters",
     "Symbol Error: incorrect annotation"
 };
+const string Errors::fake_error[] = {
+    "EOF"
+};
+const string Errors::file_error[] = {
+    "File Error: failed to open source file"
+};

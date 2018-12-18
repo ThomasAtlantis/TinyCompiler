@@ -9,7 +9,7 @@ Tables::Tables() {
             "main", "char", "double", "enum", "float", "int", "long", "short", "signed", "struct", "union",
             "unsigned", "void", "for", "do", "while", "break", "continue", "if", "else", "goto",
             "switch", "case", "default ", "return", "auto", "extern", "register", "static", "const",
-            "sizeof", "typedef", "volatile", "putc", "puts"
+            "sizeof", "typedef", "volatile", "putc", "puts", "bool"
     };
     PT = { // 界符表
             "#", "+", "-", "*", "/", "=", ">", "<", ",", ".", "&", "|", "!", "^", ";", "{", "}", "[",

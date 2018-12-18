@@ -31,7 +31,7 @@ public:
 
     typedef vector<Constant> CONSL; // 常量表
 
-    struct AINEL {
+    struct ainel {
         size_t low;
         size_t up;
         size_t clen;
@@ -70,14 +70,14 @@ public:
     }; // 类型表
 
     struct SYNBL_V {
+        string src;
         TYPEL* type;
         CATE cate;
         void* addr;
     }; // 符号表主表值
 
-    typedef map<string, SYNBL_V> SYNBL; // 符号表主表，以单词源码为索引的字典
+    typedef vector<SYNBL_V> SYNBL; // 符号表主表，以单词源码为索引的字典
 
-    SYNBL ST; // 符号表主表
     vector<string> KT; // 关键字表
     vector<string> PT; // 界符表
 

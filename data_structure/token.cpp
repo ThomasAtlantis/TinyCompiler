@@ -3,3 +3,10 @@
 //
 
 #include "token.h"
+
+ostream& operator<<(ostream& out, Token token) {
+    out << "{src: " << token.src
+        << ", kind: " << token.kind
+        << ", index: " << token.index << "}";
+    return out;
+}

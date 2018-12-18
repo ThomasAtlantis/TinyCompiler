@@ -28,7 +28,7 @@ P_charac::Shifter P_charac::shifter[4] = {
 
 P_charac::P_charac(string& bf):buffer(bf) {}
 
-bool P_charac::process(int &cur_index, char &ch) {
+bool P_charac::process(size_t &cur_index, char &ch) {
     State state = state_0;
     char cur_ch = '\0';
     while (state != state_end) {

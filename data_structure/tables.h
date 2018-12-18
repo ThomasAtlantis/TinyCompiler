@@ -7,24 +7,88 @@
 
 #include "../utility/utility.h"
 
+typedef unsigned int size_s;
+typedef char Charac;
+
 class Tables {
 public:
-    typedef enum {INTEGER, FLOAT} Num_type;
+
+    typedef enum {INTEGER, FLOAT, BOOLEAN, STRUCTURE, ARRAY} TVAL;
+    typedef enum {DOMAINN, FUNCTION, CONSTANT, TYPE, VARIABLE} CATE;
+    typedef struct typel TYPEL;
+    typedef struct ainel AINEL;
+    typedef struct rinel RINEL;
+    typedef struct pfinfl PFINFL;
+    typedef struct synbl_v SYNBL_V;
+    typedef struct vector<size_t> LENL;
+    typedef struct vall VALL;
+    typedef struct param PARAM;
+
+    struct ainel {
+        size_t low;
+        size_t up;
+        size_t clen;
+        TYPEL* ctp;
+    }; // 数组信息表
+
+    struct rinel {
+        string id;
+        size_t off;
+        TYPEL* tp;
+        RINEL* next;
+    }; // 结构体信息表
+
+    struct param {
+        string id;
+        TYPEL* type;
+        CATE cate;
+        void* addr;
+        PARAM* next;
+    }; // 函数形参表
+
+    struct pfinfl {
+        size_s level;
+        size_t off;
+        size_s fn;
+        size_t entry;
+        PARAM* param;
+    }; // 函数信息表
+
+    struct typel {
+        TVAL tval;
+        union {
+            AINEL* a;
+            RINEL* r;
+        } tptr;
+    }; // 类型表
+
+    struct synbl_v {
+        string src;
+        TYPEL* type;
+        CATE cate;
+        void* addr;
+    }; // 符号表主表值
+
+    typedef vector<SYNBL_V*> SYNBL; // 符号表主表，以单词源码为索引的字典
+
     typedef struct {
-        Num_type type;
+        TVAL type;
         union {
             float f;
             int i;
+            bool b;
         } value;
     } Number;
-    typedef char Charac;
 
-    vector<string> KT;
-    vector<string> PT;
-    vector<string> IT;
-    vector<Charac> cT;
-    vector<string> ST;
-    vector<Number*> CT;
+    map<string, SYNBL*> synbl_list;
+
+    SYNBL* synbl_cur;
+
+    vector<string> KT;  // 关键字表
+    vector<string> PT;  // 界符表
+    vector<Charac> cT;  // 字符常量表
+    vector<string> ST;  // 字符串常量表
+    vector<Number*> CT; // 数值常量表
     Tables();
     ~Tables();
 };

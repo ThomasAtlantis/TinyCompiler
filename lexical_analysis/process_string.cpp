@@ -27,7 +27,7 @@ P_string::Shifter P_string::shifter[4] = {
 
 P_string::P_string(string &bf): buffer(bf) {}
 
-bool P_string::process(int &cur_index, string &str) {
+bool P_string::process(size_t &cur_index, string &str) {
     State state = state_0;
     char cur_ch = '\0'; str = "";
     while (state != state_end) {

@@ -45,7 +45,7 @@ P_number::Shifter P_number::shifter[7] = {
 
 P_number::P_number(string &bf): buffer(bf) {}
 
-bool P_number::process(int &cur_index, Tables::Number* num, Tables::Num_type& type) {
+bool P_number::process(size_t &cur_index, Tables::Number* num, Tables::TVAL& type) {
     State state = state_0; char ch = '\0';
     int value = 0, exp_value = 0, frac_width = 0, exp_sign = 1;
     while (state != state_end) {

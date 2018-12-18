@@ -4,6 +4,7 @@
 
 #include "LL_1.h"
 #include "../lexical_analysis/scanner.h"
+#include "../data_structure/token.h"
 
 // LL1构造函数，初始化成员变量
 LL1::LL1(Grammar& grammar, Scanner& sc): G(grammar), scanner(sc) {
@@ -12,8 +13,8 @@ LL1::LL1(Grammar& grammar, Scanner& sc): G(grammar), scanner(sc) {
     if (is_available()) { // 检验文法的合法性
         available = true;
         // 计算栈顶符号列表stack_tops和当前符号列表currents
-        currents.emplace_back("#");
-        stack_tops.emplace_back("#");
+        currents.emplace_back(Grammar::bound);
+        stack_tops.emplace_back(Grammar::bound);
         for (auto iter_1: Grammar::G) {
             stack_tops.push_back(iter_1.first); // 将非终结符加入栈顶符列表
             for (auto iter_2: iter_1.second) {
@@ -114,7 +115,7 @@ void LL1::print_table() {
 
 // 初始化LL1分析表
 void LL1::initialize_table() {
-    set_op("#", "#", vector<string>{"OK"}, '\0');
+    set_op(Grammar::bound, Grammar::bound, vector<string>{"OK"}, '\0');
     for (auto iter = stack_tops.begin() + 1; iter != stack_tops.end(); iter++) {
         if (G.symbol_type(*iter) != 1) {
             if ((*iter).find("qua") == 0) { // 如果是翻译文法对应符号
@@ -165,35 +166,41 @@ void LL1::initialize_table() {
 
 // 将当前Token转为符合文法的字符串
 string LL1::token2str(Token token) {
-    string w;
-    switch (token.kind) {
-        case 'K': w = G.tables.KT[token.index]; break;
-        case 'P': w = G.tables.PT[token.index]; break;
-        case 'I': w = "@I"; break;
-        case 'C': w = (G.tables.CT[token.index])->type == Tables::INTEGER ? "@INT" : "@FLT"; break;
-        case 'c': w = "@CH"; break;
-        case 'S': w = "@STR"; break;
-        case '#': w = "#"; break;
-        default: break;
-    }
-    return w;
+    if (token.kind == "K" || token.kind == "P") {
+        return token.src;
+    } else if (token.kind == "I") {
+        return "@I";
+    } else if (token.kind == "C") {
+        switch (G.tables.CT[token.index]->type) {
+        case Tables::INTEGER: return "@INT";
+        case Tables::FLOAT  : return "@FLT";
+        case Tables::BOOLEAN: return token.src;
+        }
+    } else if (token.kind == "c") {
+        return "@CH";
+    } else if (token.kind == "S") {
+        return "@STR";
+    } else if (token.kind == Grammar::bound) {
+        return Grammar::bound;
+    } else return "";
 }
 
 // 语法分析主控函数
 vector<Quarternary> LL1::check_trans() {
     vector<Quarternary> Qs; // 返回四元式序列
     vector<Tables::Number*> operands; // 操作数栈，存四元式中的指针
-    vector<string> syn {"#", Grammar::S}; // 分析栈
-
-    Scanner::Scanner_ret sr = scanner.scan_next();
-    if (sr.error_m.type == Errors::error)
-        throw SyntaxException(scanner.get_line(), sr.error_m.log);
+    vector<string> syn {Grammar::bound, Grammar::S}; // 分析栈
+    Token token {};
+    try {
+        token = scanner.scan_next();
+    } catch (ScannerException& e) {
+        if (e.get_log() != Errors::fake_error[0]) throw e;
+    }
     while (true) {
-        string w = token2str(sr.token);
+        string w = token2str(token);
         Analyze_table_item* p = get_op(syn.back(), w); // 查LL1分析表
         if (!p || (p->stack_op).empty()) { // 如果查表越界或查到的表项为空则报错
-            cout << syn.back() << ", " << w << endl;
-            throw SyntaxException(-1, Errors::syntax_error[3]);
+            throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token.src);
         } else if (p->stack_op[0] == "OK") { // 如果查到OK则接收字符串返回四元式序列
             return Qs;
         } else {
@@ -201,20 +208,29 @@ vector<Quarternary> LL1::check_trans() {
             if (p->stack_op[0] != Grammar::null) // 如果栈操作不为弹栈，则将栈操作压栈
                 syn.insert(syn.end(), (p->stack_op).begin(), (p->stack_op).end());
             if (syn.back().length() >= 4 && syn.back().find("qua") == 0) { // 如果栈顶符为翻译文法符号
-                char operat = syn.back()[3];
-                if (operat == 'p') { // 对于quap将操作数保存入栈
-                    operands.push_back(G.tables.CT[sr.token.index]);
-                } else if (operat == '.') { // 对于qua. 处理符号运算
+                string operat = (syn.back()).substr(3, syn.back().length() - 3);
+/************** 语义动作 **************/
+
+                // 对于quap将操作数保存入栈
+                if (operat == "p") {
+                    operands.push_back(G.tables.CT[token.index]);
+                }
+
+                // 对于qua. 处理符号运算
+                else if (operat == ".") {
                     auto * res_1 = new Tables::Number;
                     auto * res_2 = operands.back();
                     auto * res = new Tables::Number;
                     res_1->type = Tables::INTEGER;
                     res_1->value.i = 0;
                     operands.pop_back();
-                    Quarternary Q = {'-', res_1, res_2, res};
+                    Quarternary Q = {"-", res_1, res_2, res};
                     Qs.push_back(Q);
                     operands.push_back(res);
-                } else { // 对于其他二元运算
+                }
+
+                // 对于其他二元运算
+                else {
                     auto * res_2 = operands.back();
                     operands.pop_back();
                     auto * res_1 = operands.back();
@@ -224,14 +240,16 @@ vector<Quarternary> LL1::check_trans() {
                     Qs.push_back(Q);
                     operands.push_back(res);
                 }
+/************** 语义动作 **************/
             }
             if (p->read_op == 'N') { // 如果当前输入流操作为N，则读下一Token
-                sr = scanner.scan_next();
-                if (sr.error_m.type == Errors::error)
-                    throw SyntaxException(scanner.get_line(), sr.error_m.log);
-                if (sr.error_m.type == Errors::eof) {
-                    if (w != "#") sr.token = {'#', 0};
-                    else throw SyntaxException(-1, Errors::syntax_error[3]);
+                try {
+                    token = scanner.scan_next();
+                } catch (ScannerException& e) {
+                    if (e.get_log() == Errors::fake_error[0]) {
+                        if (w != Grammar::bound) token = {Grammar::bound, 0, ""};
+                        else throw SyntaxException(scanner.get_line(), Errors::syntax_error[3]);
+                    } else throw e;
                 }
             }
         }

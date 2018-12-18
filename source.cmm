@@ -8,6 +8,7 @@ void main() {
                 break;
             }
         }
+        bool a;
         //333*1+1
         int b = 2+4;
         if (b == 5) {

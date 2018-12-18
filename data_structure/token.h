@@ -8,8 +8,11 @@
 #include "../utility/utility.h"
 
 typedef struct {
-    char kind;
+    string kind;
     size_t index;
+    string src;
 } Token;
+
+ostream& operator<<(ostream& out, Token token);
 
 #endif //COMPILE_TOKEN_H

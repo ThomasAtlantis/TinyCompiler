@@ -10,18 +10,15 @@
 #include "process_character.h"
 #include "process_number.h"
 #include "process_string.h"
+#include "../data_structure/errors.h"
 
 class Scanner {
 private:
     string& buffer;
     Tables& tables;
-    static int curr_index;
-    static int line_label;
+    static size_t curr_index;
+    static size_s line_label;
 public:
-    typedef struct {
-        Errors::Error_message error_m;
-        Token token;
-    } Scanner_ret;
 
     P_string p_string;
     P_charac p_charac;
@@ -30,8 +27,8 @@ public:
     Scanner(string& bf, Tables& tbs);
     ~Scanner();
 
-    Scanner_ret scan_next();
-    int get_line();
+    Token scan_next();
+    size_s get_line();
 };
 
 

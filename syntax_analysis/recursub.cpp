@@ -3,8 +3,9 @@
 //
 
 #include "recursub.h"
-#include "../lexical_analysis/scanner.h"
+#include <utility> #include "../lexical_analysis/scanner.h"
 #include "../data_structure/tables.h"
+#include "../data_structure/token.h"
 
 Recursub::Recursub(Grammar& G, Scanner& sc): G(G), scanner(sc) {
     available = is_available();
@@ -39,17 +40,17 @@ bool Recursub::is_available() {
 
 string Recursub::token2str(Token token) {
     this->token = token;
-    string w;
-    switch (token.kind) {
-        case 'K': w = G.tables.KT[token.index]; break;
-        case 'P': w = G.tables.PT[token.index]; break;
-        case 'I': w = "@I"; break;
-        case 'C': w = (G.tables.CT[token.index])->type == Tables::INTEGER ? "@INT" : "@FLT"; break;
-        case 'c': w = "@CH"; break;
-        case 'S': w = "@STR"; break;
-        default: break;
-    }
-    return w;
+    if (token.kind == "K" || token.kind == "P") {
+        return token.src;
+    } else if (token.kind == "I") {
+        return "@I";
+    } else if (token.kind == "C") {
+        return (G.tables.CT[token.index])->type == Tables::INTEGER ? "@INT" : "@FLT";
+    } else if (token.kind == "c") {
+        return "@CH";
+    } else if (token.kind == "S") {
+        return "@STR";
+    } else return "";
 }
 
 bool Recursub::subprogram(string left) {
@@ -97,10 +98,11 @@ bool Recursub::subprogram(string left) {
                 }
                 if (w == rs) { // 如果是终结符且与token对应字符串匹配
                     token_sav = this->token;
-                    Scanner::Scanner_ret sr = scanner.scan_next();
-                    if (sr.error_m.type == Errors::error)
-                        throw SyntaxException(scanner.get_line(), sr.error_m.log);
-                    w = token2str(sr.token); // 取下一个token，转为字符串以匹配文法
+                    try {
+                        w = token2str(scanner.scan_next()); // 取下一个token，转为字符串以匹配文法
+                    } catch (ScannerException& e) {
+                        if (e.get_log() != Errors::fake_error[0]) throw e;
+                    }
                 } else if (!epsilon_flag) {
                     return false; // 如果都不满足，且left不可推出空，则报错
                 }
@@ -115,11 +117,12 @@ bool Recursub::subprogram(string left) {
 vector<Quarternary> Recursub::check_trans() {
     vector<int> layers = {1};
     vector<Quarternary> error;
-    Scanner::Scanner_ret sr = scanner.scan_next();
-    if (sr.error_m.type == Errors::error)
-        throw SyntaxException(scanner.get_line(), sr.error_m.log);
-    w = token2str(sr.token); // 取下一个token，转为字符串以匹配文法
+    try {
+        w = token2str(scanner.scan_next()); // 取下一个token，转为字符串以匹配文法
+    } catch (ScannerException& e) {
+        if (e.get_log() != Errors::fake_error[0]) throw e;
+    }
     if (subprogram(Grammar::S)) {
         return Qs;
-    } else throw SyntaxException(-1, Errors::syntax_error[3]);
+    } else throw SyntaxException(0, Errors::syntax_error[3]);
 }

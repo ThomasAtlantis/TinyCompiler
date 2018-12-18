@@ -1,9 +1,7 @@
 #include "data_structure/grammar.h"
 #include "utility/utility.h"
 #include "lexical_analysis/scanner.h"
-#include "syntax_analysis/recursub.h"
 #include "syntax_analysis/LL_1.h"
-#include "data_structure/errors.h"
 
 int main() {
     Tables tables;
@@ -76,7 +74,7 @@ int main() {
     const string file_name = "../source.cmm";
     ifstream source_file(file_name.c_str());
     if (!source_file.is_open()) {
-        cout << "File Error: failed to open source file" << endl;
+        cout << Errors::file_error[0] << endl;
         return 0;
     }
     string buffer((std::istreambuf_iterator<char>(source_file)), std::istreambuf_iterator<char>());
@@ -88,7 +86,7 @@ int main() {
         try {
             vector<Quarternary> Qs = ll1.check_trans();
             if (!Qs.empty()) print_qs(Qs);
-        } catch (SyntaxException& e) {
+        } catch (exception& e) {
             cout << e.what() << endl;
         }
     }

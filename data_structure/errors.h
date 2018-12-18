@@ -6,31 +6,34 @@
 #define COMPILE_ERRORS_H
 
 #include "../utility/utility.h"
+#include "tables.h"
 
 class Errors {
 public:
-    typedef enum {error=-1, clear=0, eof=1} Type;
-
-    typedef struct {
-        Type type;
-        string log;
-    } Error_message;
-
     static const string syntax_error[];
-
     static const string symbol_error[];
+    static const string fake_error[];
+    static const string file_error[];
 };
 
 class ScannerException: public exception {
 private:
-    int line_label;
+    size_s line_label;
     string log;
 public:
-    ScannerException(int line_label, string log) {
+    ScannerException(size_s line_label, string log) noexcept {
         this->line_label = line_label;
         this->log = std::move(log);
     }
     ~ScannerException() noexcept override = default;
+
+    size_s get_line() noexcept {
+        return this->line_label;
+    }
+
+    string get_log() noexcept {
+        return this->log;
+    }
 
     const char* what() const noexcept override {
         return ("(" + to_string(line_label) + ") " + log).c_str();
@@ -39,13 +42,14 @@ public:
 
 class SyntaxException: public exception {
 private:
-    int line_label;
+    size_s line_label;
     string log;
 public:
-    SyntaxException(int line_label, string log) {
+    SyntaxException(size_s line_label, string log) noexcept {
         this->line_label = line_label;
         this->log = std::move(log);
     }
+
     ~SyntaxException() noexcept override = default;
 
     const char* what() const noexcept override {

@@ -9,7 +9,7 @@
 #include "tables.h"
 
 typedef struct {
-    char op;
+    string op;
     Tables::Number *a;
     Tables::Number *b;
     Tables::Number *res;
