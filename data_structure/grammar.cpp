@@ -55,6 +55,7 @@ ostream &operator<<(ostream &out, Grammar &grammar) {
     return out;
 }
 
+// TODO: remove qua... from first set
 set<string> Grammar::first_set_of(Grammar::Right_symbols x) {
     set<string> first_set;
     Right_lists right_lists;
@@ -88,6 +89,7 @@ set<string> Grammar::first_set_of(Grammar::Right_symbols x) {
     return first_set;
 }
 
+// TODO: remove qua... from follow set
 set<string> Grammar::follow_set_of(string x) {
     if (symbol_type(x) != VN) return set<string>();
     auto it = follows.find(x);

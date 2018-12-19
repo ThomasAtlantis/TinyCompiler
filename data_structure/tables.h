@@ -121,7 +121,6 @@ ostream& operator<<(ostream& out, Tables::Number n);
 bool operator==(Tables::Number n_1, Tables::Number n_2);
 
 // 查表，返回位置下标
-int find(vector<Tables::SYNBL_V*> values, Tables::SYNBL_V* key);
 int find(vector<string*> vec, string key);
 int find(vector<Charac*> vec, Charac key);
 int find(vector<Tables::Number*> nums, Tables::Number key);

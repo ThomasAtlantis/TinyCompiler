@@ -22,6 +22,7 @@ Tables::Tables() {
             "<<=", ">>=" // 44 ~ 45 三字符
     };
     synbl_cur = nullptr;
+    new_synbl("#GLOBAL");
 }
 
 Tables::~Tables() = default;
@@ -81,6 +82,7 @@ Tables::SYNBL_V *SYNBL::search(const string &src) {
 
 string Tables::get_global_name() {
     string global_name = "t" + to_string(global_count);
+    global_count += 1;
     return std::move(global_name);
 }
 

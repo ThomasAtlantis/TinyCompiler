@@ -188,8 +188,13 @@ string LL1::token2str(Token token) {
 // 语法分析主控函数
 vector<Quarternary> LL1::check_trans() {
     vector<Quarternary> Qs; // 返回四元式序列
-    vector<Tables::SYNBL_V*> operands; // 操作数栈，存四元式中的指针
     vector<string> syn {Grammar::bound, Grammar::S}; // 分析栈
+
+    /************** 语义动作用到的变量 **************/
+    vector<Tables::SYNBL_V*> operands; // 操作数栈，存四元式中的指针
+    string function_name;
+    /************** 语义动作用到的变量 **************/
+
     Token token = nullptr;
     try {
         token = scanner.scan_next();
@@ -200,6 +205,7 @@ vector<Quarternary> LL1::check_trans() {
         string w = token2str(token);
         Analyze_table_item* p = get_op(syn.back(), w); // 查LL1分析表
         if (!p || (p->stack_op).empty()) { // 如果查表越界或查到的表项为空则报错
+            cout << syn.back() << endl;
             throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token->src);
         } else if (p->stack_op[0] == "OK") { // 如果查到OK则接收字符串返回四元式序列
             return Qs;
@@ -209,7 +215,8 @@ vector<Quarternary> LL1::check_trans() {
                 syn.insert(syn.end(), (p->stack_op).begin(), (p->stack_op).end());
             if (syn.back().length() >= 4 && syn.back().find("qua") == 0) { // 如果栈顶符为翻译文法符号
                 string operat = (syn.back()).substr(3, syn.back().length() - 3);
-/************** 语义动作 **************/
+
+                /************** 语义动作 **************/
 
                 // 对于quap将操作数保存入栈
                 if (operat == "p") {
@@ -234,7 +241,11 @@ vector<Quarternary> LL1::check_trans() {
 
                 // main后左花括号新建符号表
                 else if (operat == "_new_synbl") {
-                    G.tables.new_synbl("main");
+                    G.tables.new_synbl(function_name);
+                }
+
+                else if (operat == "_sav_func_name") {
+                    function_name = token->src;
                 }
 
                 // 对于其他二元运算
@@ -249,7 +260,7 @@ vector<Quarternary> LL1::check_trans() {
                     operands.push_back(res);
                 }
 
-/************** 语义动作 **************/
+            /************** 语义动作 **************/
             }
             if (p->read_op == 'N') { // 如果当前输入流操作为N，则读下一Token
                 try {
