@@ -6,12 +6,9 @@
 #define COMPILE_TOKEN_H
 
 #include "../utility/utility.h"
+#include "tables.h"
 
-typedef struct {
-    string kind;
-    size_t index;
-    string src;
-} Token;
+typedef Tables::SYNBL_V* Token;
 
 ostream& operator<<(ostream& out, Token token);
 

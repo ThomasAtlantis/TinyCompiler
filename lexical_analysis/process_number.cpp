@@ -45,7 +45,7 @@ P_number::Shifter P_number::shifter[7] = {
 
 P_number::P_number(string &bf): buffer(bf) {}
 
-bool P_number::process(size_t &cur_index, Tables::Number* num, Tables::TVAL& type) {
+bool P_number::process(size_t &cur_index, Tables::Number* num) {
     State state = state_0; char ch = '\0';
     int value = 0, exp_value = 0, frac_width = 0, exp_sign = 1;
     while (state != state_end) {
@@ -54,20 +54,20 @@ bool P_number::process(size_t &cur_index, Tables::Number* num, Tables::TVAL& typ
                 value = exp_value = frac_width = 0;
                 exp_sign = 1;
                 num->value.i = 0;
-                type = Tables::INTEGER;
+                num->type = Tables::INTEGER;
                 break;
             case state_1:
                 value = 10 * value + (ch - '0');
                 break;
             case state_2:
-                type = Tables::FLOAT;
+                num->type = Tables::FLOAT;
                 break;
             case state_3:
                 value = 10 * value + (ch - '0');
                 frac_width ++;
                 break;
             case state_4:
-                type = Tables::FLOAT;
+                num->type = Tables::FLOAT;
                 break;
             case state_5:
                 if (ch == '-') exp_sign = -1;
@@ -83,11 +83,10 @@ bool P_number::process(size_t &cur_index, Tables::Number* num, Tables::TVAL& typ
         ch = buffer[cur_index ++];
         state = (*shifter[state])(ch, state);
     }
-    if (type == Tables::INTEGER)
+    if (num->type == Tables::INTEGER)
         num->value.i = static_cast<int>(value * pow(10, exp_sign * exp_value - frac_width));
-    else if (type == Tables::FLOAT)
+    else if (num->type == Tables::FLOAT)
         num->value.f = static_cast<float>(value * pow(10, exp_sign * exp_value - frac_width));
-    num->type = type;
     cur_index --;
     return true;
 }

@@ -19,7 +19,7 @@ private:
 public:
     explicit P_number(string& buffer);
 
-    bool process(size_t& cur_index, Tables::Number* num, Tables::TVAL& type);
+    bool process(size_t& cur_index, Tables::Number* num);
 };
 
 #endif //COMPILE_PROCESS_NUMBER_H

@@ -35,9 +35,11 @@ Token Scanner::Scanner::scan_next() {
     else if (current_char == '\'') {
         char ch;
         if (p_charac.process(curr_index, ch)) {
-            tables.cT.push_back(ch);
-            token.kind = "c";
-            token.index = tables.cT.size() - 1;
+            int index = find(tables.cT, ch);
+            if (index == -1) tables.cT.push_back(&ch);
+            token = new Tables::SYNBL_V {
+                "", tables.synbl_cur->child->get_xtp('c'), Tables::CONSTANT, &ch
+            };
         } else throw ScannerException(line_label, Errors::syntax_error[0]);
     }
 
@@ -45,9 +47,11 @@ Token Scanner::Scanner::scan_next() {
     else if (current_char == '\"') {
         string str;
         if (p_string.process(curr_index, str)) {
-            tables.ST.push_back(str);
-            token.kind = "S";
-            token.index = tables.ST.size() - 1;
+            int index = find(tables.ST, str);
+            if (index == -1) tables.ST.push_back(&str);
+            token = new Tables::SYNBL_V {
+                "", tables.synbl_cur->child->get_xtp('s'), Tables::CONSTANT, &str
+            };
         } else throw ScannerException(line_label, Errors::syntax_error[1]);
     }
 
@@ -56,10 +60,13 @@ Token Scanner::Scanner::scan_next() {
         auto * num = new Tables::Number;
         Tables::TVAL type;
         curr_index --;
-        if (p_number.process(curr_index, num, type)) {
-            tables.CT.push_back(num);
-            token.kind = "C";
-            token.index = tables.CT.size() - 1;
+        if (p_number.process(curr_index, num)) {
+            int index = find(tables.CT, *num);
+            if (index != -1) tables.CT.push_back(num);
+            char xtp = num->type == Tables::INTEGER ? 'i': 'r';
+            token = new Tables::SYNBL_V {
+                "", tables.synbl_cur->child->get_xtp(xtp), Tables::CONSTANT, num
+            };
         } else throw ScannerException(line_label, Errors::syntax_error[2]);
     }
 
@@ -70,23 +77,25 @@ Token Scanner::Scanner::scan_next() {
         while (is_letter(current_char) or is_digit(current_char) or current_char == '_');
         string tmp = buffer.substr(size_t(l_index), size_t(curr_index - l_index - 1));
         if (tmp == "true" or tmp == "false") {
-            token.kind = "C";
-            token.index = tables.CT.size();
             Tables::Number num;
             num.type = Tables::BOOLEAN;
             num.value.b = tmp == "true";
-            tables.CT.push_back(&num);
+            int index = find(tables.CT, num);
+            if (index != -1) tables.CT.push_back(&num);
+            token = new Tables::SYNBL_V {
+                "", tables.synbl_cur->child->get_xtp('b'), Tables::CONSTANT, &num
+            };
         } else {
-            auto index = find(all(tables.KT), tmp);
-            if (index != tables.KT.end()) {
-                token.kind = "K";
-                token.index = size_t(index - tables.KT.begin());
+            if (count(all(tables.KT), tmp) != 0) {
+                token = new Tables::SYNBL_V {
+                    "", nullptr, Tables::KEYWORD, nullptr
+                };
             } else {
-                token.kind = "I";
-                token.index = 0;
-                auto * synbl_v = tables.search(tables.synbl_cur->child, tmp);
+                auto * synbl_v = tables.synbl_cur->child->search(tmp);
                 if (synbl_v == nullptr) {
-                    tables.add(tables.synbl_cur->child, tmp);
+                    token = tables.synbl_cur->child->add(tmp);
+                } else {
+                    token = synbl_v;
                 }
             }
         }
@@ -95,25 +104,24 @@ Token Scanner::Scanner::scan_next() {
 
     // 识别界符，查tables.PT表
     else {
+        token = new Tables::SYNBL_V {"", nullptr, Tables::DELIMITER, nullptr};
+        string delimiter;
         bool has_value = false;
-        token.kind = "P";
         for (int i = 2; i >= 0; i --) {
             if (curr_index + i > buffer.length()) continue;
-            string key = buffer.substr(size_t(curr_index - 1), size_t(i + 1));
-            auto index = find(all(tables.PT), key);
-            if (index != tables.PT.end()) {
+            delimiter = buffer.substr(size_t(curr_index - 1), size_t(i + 1));
+            if (count(all(tables.PT), delimiter) != 0) {
                 has_value = true;
-                token.index = size_t(index - tables.PT.begin());
                 curr_index += i;
                 break;
             }
         }
         if (has_value) {
-            if (tables.PT[token.index] == "//") {
+            if (delimiter == "//") {
                 while(curr_index < buffer.length() && buffer[curr_index ++] != '\n');
                 line_label ++;
                 return scan_next();
-            } else if (tables.PT[token.index] == "/*") {
+            } else if (delimiter == "/*") {
                 while(curr_index < buffer.length() - 1 && buffer.substr(size_t(curr_index ++), 2) != "*/")
                     if (buffer[curr_index] == '\n') line_label ++;
                 curr_index += 1;
@@ -123,7 +131,7 @@ Token Scanner::Scanner::scan_next() {
             }
         } else throw ScannerException(line_label, Errors::symbol_error[0]);
     }
-    token.src = buffer.substr(old_index, curr_index - old_index);
+    token->src = buffer.substr(old_index, curr_index - old_index);
     return token;
 }
 

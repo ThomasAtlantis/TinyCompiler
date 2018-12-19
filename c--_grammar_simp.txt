@@ -1,5 +1,5 @@
 A0 -> A1
-A1 -> void main ( ) { A2 }
+A1 -> void main ( ) { qua_new_synbl A2 }
 A2 -> A3 A2 | null | A4 A2
 A3 -> A5 | A6 | A7
 A5 -> A8 ;
@@ -30,7 +30,7 @@ D3 -> + D2 qua+ D3 | - D2 qua- D3 | null
 D2 -> D4 D5
 D5 -> * D4 qua* D5 | / D4 qua/ D5 | null
 D4 -> D6
-D6 -> D7 | ! D7 | - D7
+D6 -> D7 | ! D7 | - D7 qua.
 D7 -> B8 C6 | C5 quap | ( A9 )
 A8 -> D8 | C1 | return | B5 | struct B8 D9
 D8 -> C4 E0

@@ -10,9 +10,9 @@
 
 typedef struct {
     string op;
-    Tables::Number *a;
-    Tables::Number *b;
-    Tables::Number *res;
+    Tables::SYNBL_V *a;
+    Tables::SYNBL_V *b;
+    Tables::SYNBL_V *res;
 } Quarternary;
 
 void print_qs(vector<Quarternary>& Qs);

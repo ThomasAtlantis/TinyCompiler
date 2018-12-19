@@ -52,7 +52,7 @@ int main() {
     grammar.add("D2") >> "D4 D5";
     grammar.add("D5") >> "* D4 qua* D5" | "/ D4 qua/ D5" | "null";
     grammar.add("D4") >> "D6";
-    grammar.add("D6") >> "D7" | "! D7" | "- D7";
+    grammar.add("D6") >> "D7" | "! D7" | "- D7 qua.";
     grammar.add("D7") >> "B8 C6" | "C5 quap" | "( A9 )";
     grammar.add("A8") >> "D8" | "C1" | "return" | "B5" | "struct B8 D9";
     grammar.add("D8") >> "C4 E0";

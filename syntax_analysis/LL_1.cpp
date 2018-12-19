@@ -5,6 +5,7 @@
 #include "LL_1.h"
 #include "../lexical_analysis/scanner.h"
 #include "../data_structure/token.h"
+#include "../data_structure/tables.h"
 
 // LL1构造函数，初始化成员变量
 LL1::LL1(Grammar& grammar, Scanner& sc): G(grammar), scanner(sc) {
@@ -166,21 +167,20 @@ void LL1::initialize_table() {
 
 // 将当前Token转为符合文法的字符串
 string LL1::token2str(Token token) {
-    if (token.kind == "K" || token.kind == "P") {
-        return token.src;
-    } else if (token.kind == "I") {
+    if (token->cate == Tables::KEYWORD || token->cate == Tables::DELIMITER) {
+        return token->src;
+    } else if (token->cate == Tables::VARIABLE) {
         return "@I";
-    } else if (token.kind == "C") {
-        switch (G.tables.CT[token.index]->type) {
+    } else if (token->cate == Tables::CONSTANT) {
+        switch (token->type->tval) {
         case Tables::INTEGER: return "@INT";
         case Tables::FLOAT  : return "@FLT";
-        case Tables::BOOLEAN: return token.src;
+        case Tables::CHAR   : return "@CH";
+        case Tables::STRING : return "@STR";
+        case Tables::BOOLEAN: return token->src;
+        default: return "";
         }
-    } else if (token.kind == "c") {
-        return "@CH";
-    } else if (token.kind == "S") {
-        return "@STR";
-    } else if (token.kind == Grammar::bound) {
+    } else if (token->cate == Tables::BOUND) {
         return Grammar::bound;
     } else return "";
 }
@@ -188,9 +188,9 @@ string LL1::token2str(Token token) {
 // 语法分析主控函数
 vector<Quarternary> LL1::check_trans() {
     vector<Quarternary> Qs; // 返回四元式序列
-    vector<Tables::Number*> operands; // 操作数栈，存四元式中的指针
+    vector<Tables::SYNBL_V*> operands; // 操作数栈，存四元式中的指针
     vector<string> syn {Grammar::bound, Grammar::S}; // 分析栈
-    Token token {};
+    Token token = nullptr;
     try {
         token = scanner.scan_next();
     } catch (ScannerException& e) {
@@ -200,7 +200,7 @@ vector<Quarternary> LL1::check_trans() {
         string w = token2str(token);
         Analyze_table_item* p = get_op(syn.back(), w); // 查LL1分析表
         if (!p || (p->stack_op).empty()) { // 如果查表越界或查到的表项为空则报错
-            throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token.src);
+            throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token->src);
         } else if (p->stack_op[0] == "OK") { // 如果查到OK则接收字符串返回四元式序列
             return Qs;
         } else {
@@ -213,16 +213,19 @@ vector<Quarternary> LL1::check_trans() {
 
                 // 对于quap将操作数保存入栈
                 if (operat == "p") {
-                    operands.push_back(G.tables.CT[token.index]);
+                    operands.push_back(token);
                 }
 
                 // 对于qua. 处理符号运算
                 else if (operat == ".") {
-                    auto * res_1 = new Tables::Number;
+                    auto * num = new Tables::Number;
+                    num->type = Tables::INTEGER;
+                    num->value.i = 0;
+                    auto * res_1 = new Tables::SYNBL_V {
+                        "0", G.tables.synbl_cur->child->get_xtp('i'), Tables::CONSTANT, num
+                    };
                     auto * res_2 = operands.back();
-                    auto * res = new Tables::Number;
-                    res_1->type = Tables::INTEGER;
-                    res_1->value.i = 0;
+                    auto * res = G.tables.synbl_cur->child->add(Tables::get_global_name());
                     operands.pop_back();
                     Quarternary Q = {"-", res_1, res_2, res};
                     Qs.push_back(Q);
@@ -240,11 +243,12 @@ vector<Quarternary> LL1::check_trans() {
                     operands.pop_back();
                     auto * res_1 = operands.back();
                     operands.pop_back();
-                    auto * res = new Tables::Number;
+                    auto * res = G.tables.synbl_cur->child->add(Tables::get_global_name());
                     Quarternary Q = {operat, res_1, res_2, res};
                     Qs.push_back(Q);
                     operands.push_back(res);
                 }
+
 /************** 语义动作 **************/
             }
             if (p->read_op == 'N') { // 如果当前输入流操作为N，则读下一Token
@@ -252,7 +256,8 @@ vector<Quarternary> LL1::check_trans() {
                     token = scanner.scan_next();
                 } catch (ScannerException& e) {
                     if (e.get_log() == Errors::fake_error[0]) {
-                        if (w != Grammar::bound) token = {Grammar::bound, 0, ""};
+                        if (w != Grammar::bound)
+                            token = new Tables::SYNBL_V {Grammar::bound, nullptr, Tables::BOUND, nullptr};
                         else throw SyntaxException(scanner.get_line(), Errors::syntax_error[3]);
                     } else throw e;
                 }
