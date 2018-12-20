@@ -3,22 +3,19 @@
 //
 
 #include <iostream>
-
-int a = 0;
-int b = a + 1;
-
-int function() {
-    int c = 0;
-    int b = function();
-    return 0;
-}
-
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#define all(x) (x).begin(),(x).end()
+using namespace std;
 int main() {
-    std::cout << function();
-    std::cout << function();
-    std::cout << function();
-    std::cout << function();
-    std::cout << a << ", " << b << std::endl;
-    int a.2;
+    vector<string> vec = {"qua+", "qua-", "A", "B", "C"};
+    vector<string> right(vec.size());
+    auto right_it = copy_if(all(right), right.begin(), [](string& symbol) {
+        return symbol.find("qua") == string::npos;
+    });
+    //right.resize(static_cast<size_t>(distance(right.begin(), right_it)));
+    for (auto& x: vec) cout << x << " "; cout << endl;
+    for (auto& x: right) cout << x << " "; cout << endl;
     return 0;
 }

@@ -1,38 +1,4 @@
-func(char a, int b, bool c) {
-    putc a;
-    putc 'A';
-    int a = 10*10;
-    puts "hello world\n";
-}
-func(int& x, int n) {
-    int i = 0;
-    int y = x;
-    for (i = 0; i < n; i = i + 1) {
-        x = x * y;
-    }
-}
 main() {
-    int a = 4;
-    func(a, b, 0);
-    func(a, true);
-    func(1.2);
-    func();
-    while (1) {
-        int a = -9*3;
-        for (int i = 0; i < 10; i = 8 + 1) {
-            if (i == 3) {
-                continue;
-            } else if (i == 5) {
-                break;
-            }
-        }
-        bool a;
-        //333*1+1
-        int b = 2+4;
-        if (b == 5) {/*
-        没毛病*/while(1){}
-        } else /*没毛病*/{
-            continue;
-        }
-    }
+    int a[2];
+    char b = 10*2;
 }

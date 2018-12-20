@@ -14,7 +14,12 @@ vector<string> Grammar::todos;
 
 Grammar::Grammar(Tables &t): tables(t) {}
 
-Grammar::~Grammar() = default;
+Grammar::~Grammar() {
+    this->firsts.clear();
+    this->follows.clear();
+    this->G.clear();
+    this->todos.clear();
+}
 
 // 设置文法开始符号`开始符号
 void Grammar::set_start(string start) {
@@ -55,10 +60,9 @@ ostream &operator<<(ostream &out, Grammar &grammar) {
     return out;
 }
 
-// TODO: remove qua... from first set
 set<string> Grammar::first_set_of(Grammar::Right_symbols x) {
     set<string> first_set;
-    Right_lists right_lists;
+    Right_lists right_lists_raw, right_lists;
     if (x.size() == 1) {
         if (symbol_type(x[0]) != VN) {
             first_set.insert(x[0]);
@@ -66,8 +70,17 @@ set<string> Grammar::first_set_of(Grammar::Right_symbols x) {
         }
         auto it = firsts.find(x[0]);
         if (it != firsts.end()) return it->second;
-        right_lists = (*G.find(x[0])).second;
-    } else right_lists.push_back(x);
+        right_lists_raw = (*G.find(x[0])).second;
+    } else right_lists_raw.push_back(x);
+    for (const auto &right: right_lists_raw) {
+        vector<string> tmp;
+        for (const auto &symbol: right) {
+            if (symbol.find("qua") == string::npos) {
+                tmp.push_back(symbol);
+            }
+        }
+        if (!tmp.empty()) right_lists.push_back(tmp);
+    }
     for (auto right: right_lists) {
         string f = right.front();
         if (symbol_type(f) == VN) {
@@ -85,11 +98,11 @@ set<string> Grammar::first_set_of(Grammar::Right_symbols x) {
             if (symbol == right.end()) first_set.insert(null);
         } else first_set.insert(f);
     }
+    right_lists.clear();
     if (x.size() == 1 && !first_set.empty()) firsts.insert(pair<string, set<string>>(x[0], first_set));
     return first_set;
 }
 
-// TODO: remove qua... from follow set
 set<string> Grammar::follow_set_of(string x) {
     if (symbol_type(x) != VN) return set<string>();
     auto it = follows.find(x);
@@ -97,7 +110,13 @@ set<string> Grammar::follow_set_of(string x) {
     set<string> follow_set;
     if (x == S) follow_set.insert(bound);
     for (const auto &production: G) {
-        for (auto right: production.second) {
+        for (const auto &right_raw: production.second) {
+            vector<string> right;
+            for (const auto &symbol: right_raw) {
+                if (symbol.find("qua") == string::npos) {
+                    right.push_back(symbol);
+                }
+            }
             Right_symbols::iterator where_x_is;
             for (where_x_is = right.begin(); where_x_is != right.end(); where_x_is ++)
                 if (*where_x_is == x) break;
@@ -110,16 +129,13 @@ set<string> Grammar::follow_set_of(string x) {
                 if (first.count(null)) follow_set.erase(null);
             }
             if (production.first != x && (where_x_is == right.end() - 1 || first.count(null))) {
-
                 if (find(all(todos), x) != todos.end()) continue;
                 todos.push_back(x);
-
                 set<string> follow = follow_set_of(production.first);
-
                 todos.pop_back();
-
                 follow_set.insert(follow.begin(), follow.end());
             }
+            right.clear();
         }
     }
     if (!follow_set.empty()) follows.insert(pair<string, set<string>>(x, follow_set));

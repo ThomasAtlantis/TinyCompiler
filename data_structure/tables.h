@@ -22,11 +22,11 @@ public:
     typedef enum {
         DOMAINN, FUNCTION, CONSTANT, TYPE, VARIABLE, KEYWORD, DELIMITER, BOUND
     } CATE;
-    typedef vector<size_t> LENL;
+    typedef size_t LENL;
     typedef struct ainel {
         size_t low;
         size_t up;
-        size_t clen;
+        size_t clen; // 数组每个元素所占用字节数
         struct typel* ctp;
     } AINEL; // 数组信息表
     typedef struct rinel {
@@ -91,6 +91,8 @@ public:
     // 获取一个全局唯一标识的名字：tx
     static string get_global_name();
 
+    static size_s get_size_of(TVAL type);
+
 };
 
 class SYNBL {
@@ -99,7 +101,7 @@ public:
     vector<Tables::TYPEL*> typel;   // 类型表
     vector<Tables::RINEL*> rinel;   // 结构体信息表
     vector<Tables::AINEL*> ainel;   // 数组信息表
-    vector<Tables::LENL*> lenl;     // 长度表
+    vector<Tables::LENL *> lenl;     // 长度表
     vector<Tables::PFINFL*> pfinfl; // 函数信息表
     vector<Tables::PARAM*> param;   // 形参信息表
 
@@ -114,6 +116,7 @@ public:
 
     // 获取itp, rtp, ctp, btp和stp的指针
     Tables::TYPEL* get_xtp(char kind);
+    Tables::TYPEL* get_xtp(Tables::TVAL kind);
 
 };
 // 重载运算符

@@ -86,6 +86,16 @@ string Tables::get_global_name() {
     return std::move(global_name);
 }
 
+size_s Tables::get_size_of(Tables::TVAL type) {
+    switch (type) {
+        case FLOAT: return 4;
+        case INTEGER: return 4;
+        case BOOLEAN: return 1;
+        case CHAR: return 1;
+        default: return 0;
+    }
+}
+
 SYNBL::SYNBL() {
     auto * rtp = new Tables::TYPEL {Tables::FLOAT, nullptr};
     auto * itp = new Tables::TYPEL {Tables::INTEGER, nullptr};
@@ -106,6 +116,17 @@ Tables::TYPEL *SYNBL::get_xtp(char kind) {
     }
 }
 
+Tables::TYPEL *SYNBL::get_xtp(Tables::TVAL kind) {
+    switch (kind) {
+        case Tables::FLOAT: return typel[0];
+        case Tables::INTEGER: return typel[1];
+        case Tables::BOOLEAN: return typel[2];
+        case Tables::CHAR: return typel[3];
+        case Tables::STRING: return typel[4];
+        default: return nullptr;
+    }
+}
+
 Tables::SYNBL_V *SYNBL::add(string src) {
     auto * synbl_v = new Tables::SYNBL_V {
         std::move(src), nullptr, Tables::VARIABLE, nullptr
@@ -114,7 +135,15 @@ Tables::SYNBL_V *SYNBL::add(string src) {
     return synbl_v;
 }
 
-SYNBL::~SYNBL() = default;
+SYNBL::~SYNBL() {
+    for (auto i: content) delete i; content.clear();
+    for (auto i: typel) delete i; typel.clear();
+    for (auto i: rinel) delete i; rinel.clear();
+    for (auto i: ainel) delete i; ainel.clear();
+    for (auto i: lenl) delete i; lenl.clear();
+    for (auto i: pfinfl) delete i; pfinfl.clear();
+    for (auto i: param) delete i; param.clear();
+}
 
 int find(vector<Tables::SYNBL_V*> values, Tables::SYNBL_V* key) {
     for (size_s index = 0; index < values.size(); index++)

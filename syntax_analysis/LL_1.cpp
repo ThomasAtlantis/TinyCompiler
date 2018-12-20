@@ -193,6 +193,11 @@ vector<Quarternary> LL1::check_trans() {
     /************** 语义动作用到的变量 **************/
     vector<Tables::SYNBL_V*> operands; // 操作数栈，存四元式中的指针
     string function_name;
+
+    // For declaration
+    Tables::TVAL declare_type = Tables::INTEGER;
+    Tables::SYNBL_V* declare_id = nullptr;
+    size_s array_len = 0;
     /************** 语义动作用到的变量 **************/
 
     Token token = nullptr;
@@ -205,7 +210,7 @@ vector<Quarternary> LL1::check_trans() {
         string w = token2str(token);
         Analyze_table_item* p = get_op(syn.back(), w); // 查LL1分析表
         if (!p || (p->stack_op).empty()) { // 如果查表越界或查到的表项为空则报错
-            cout << syn.back() << endl;
+            cout << "SYN.BACK(): " << syn.back() << endl;
             throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token->src);
         } else if (p->stack_op[0] == "OK") { // 如果查到OK则接收字符串返回四元式序列
             return Qs;
@@ -221,10 +226,7 @@ vector<Quarternary> LL1::check_trans() {
                 // 对于quap将操作数保存入栈
                 if (operat == "p") {
                     operands.push_back(token);
-                }
-
-                // 对于qua. 处理符号运算
-                else if (operat == ".") {
+                } else if (operat == ".") { // 对于qua. 处理符号运算
                     auto * num = new Tables::Number;
                     num->type = Tables::INTEGER;
                     num->value.i = 0;
@@ -237,19 +239,8 @@ vector<Quarternary> LL1::check_trans() {
                     Quarternary Q = {"-", res_1, res_2, res};
                     Qs.push_back(Q);
                     operands.push_back(res);
-                }
-
-                // main后左花括号新建符号表
-                else if (operat == "_new_synbl") {
-                    G.tables.new_synbl(function_name);
-                }
-
-                else if (operat == "_sav_func_name") {
-                    function_name = token->src;
-                }
-
-                // 对于其他二元运算
-                else if (operat == "+" or operat == "-" or operat == "*" or operat == "/") {
+                    // 对于其他二元运算
+                } else if (operat == "+" or operat == "-" or operat == "*" or operat == "/") {
                     auto * res_2 = operands.back();
                     operands.pop_back();
                     auto * res_1 = operands.back();
@@ -258,6 +249,77 @@ vector<Quarternary> LL1::check_trans() {
                     Quarternary Q = {operat, res_1, res_2, res};
                     Qs.push_back(Q);
                     operands.push_back(res);
+                }
+
+                // 左花括号后新建符号表
+                else if (operat == "_new_synbl") {
+                    G.tables.new_synbl(function_name);
+                }
+
+                // 储存当前函数名
+                else if (operat == "_sav_func_name") {
+                    function_name = token->src;
+                }
+
+                // 获取类型
+                else if (operat == "_int") {
+                    declare_type = Tables::INTEGER;
+                } else if (operat == "_float") {
+                    declare_type = Tables::FLOAT;
+                } else if (operat == "_bool") {
+                    declare_type = Tables::BOOLEAN;
+                } else if (operat == "_char") {
+                    declare_type = Tables::CHAR;
+                } else if (operat == "_declare_id") {
+                    if (token->type != nullptr)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[5] + ": " + token->src);
+                    declare_id = token;
+                } else if (operat == "_declare_arr") {
+                    auto * num = (Tables::Number*)token->addr;
+                    if (num->value.i <= 1)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[4] + ": " + token->src);
+                    array_len = (size_s)num->value.i;
+                } else if (operat == "_declare") {
+                        SYNBL* synbl = G.tables.synbl_cur->child;
+                    if (array_len != 0) {
+                        // 新建数组信息
+                        auto * array_info = new Tables::AINEL;
+                        array_info->low = 0;
+                        array_info->up = array_len - 1;
+                        array_info->ctp = synbl->get_xtp(declare_type);
+                        array_info->clen = Tables::get_size_of(declare_type);
+                        synbl->ainel.push_back(array_info);
+
+                        // 注册数组信息入类型表
+                        auto * typel = new Tables::TYPEL;
+                        typel->tval = Tables::ARRAY;
+                        typel->tptr = array_info;
+                        synbl->typel.push_back(typel);
+
+                        // 填长度表
+                        auto * len = new Tables::LENL {array_len * array_info->clen};
+                        synbl->lenl.push_back(len);
+
+                        // 填主符号表
+                        // 填匿名类型
+                        Tables::SYNBL_V* type = synbl->add(Tables::get_global_name());
+                        type->cate = Tables::TYPE;
+                        type->type = typel;
+                        type->addr = len;
+                        // 填声明变量
+                        declare_id->cate = Tables::VARIABLE;
+                        declare_id->type = typel;
+                        declare_id->addr = nullptr;
+                        // TODO: 计算addr，即variable的区距，有赖于活动记录栈
+
+                        // 更新值
+                        array_len = 0;
+                    } else {
+                        declare_id->cate = Tables::VARIABLE;
+                        declare_id->type = synbl->get_xtp(declare_type);
+                        declare_id->addr = nullptr;
+                        // TODO: 计算addr，即variable的区距，有赖于活动记录栈
+                    }
                 }
 
             /************** 语义动作 **************/
