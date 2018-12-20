@@ -10,7 +10,8 @@ const string Errors::syntax_error[] = {
     "Syntax Error: incorrect constant",
     "Syntax Error: wrong expression",
     "Syntax Error: wrong index for array declaration",
-    "Syntax Error: redeclaration of variable"
+    "Syntax Error: redeclaration of variable",
+    "Syntax Error: undeclared variable"
 };
 const string Errors::symbol_error[] = {
     "Symbol Error: incorrect delimiters",

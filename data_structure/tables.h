@@ -67,15 +67,9 @@ public:
             bool b;
         } value;
     } Number;
-    typedef struct {
-        SYNBL* child;
-        SYNBL* parent;
-        size_t index;
-        size_s level;
-    } SYNBL_DICT_V;
 
-    map<string, SYNBL_DICT_V> synbl_dict; // 符号表类的记录的字典，一个函数对应一张表
-    SYNBL_DICT_V* synbl_cur; // 维护当前的符号表记录，synbl_cur.child为当前符号表系统
+    map<string, SYNBL*> synbl_dict; // 符号表类的字典，一个函数对应一张表
+    SYNBL* synbl_cur; // 维护当前的符号表
     static size_t global_count; // 全局唯一标识计数器
     vector<string> KT;  // 关键字表
     vector<string> PT;  // 界符表
@@ -88,15 +82,24 @@ public:
     // 新建一张符号表
     void new_synbl(string name);
 
+    void ret_synbl();
+
     // 获取一个全局唯一标识的名字：tx
     static string get_global_name();
 
     static size_s get_size_of(TVAL type);
 
+    SYNBL_V* search(const string &src);
+
 };
 
 class SYNBL {
 public:
+
+    SYNBL* parent;
+    size_t index;
+    size_s level;
+
     vector<Tables::SYNBL_V*> content; // 符号表主表，以单词源码为索引的字典
     vector<Tables::TYPEL*> typel;   // 类型表
     vector<Tables::RINEL*> rinel;   // 结构体信息表

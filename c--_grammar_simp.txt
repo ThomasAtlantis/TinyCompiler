@@ -1,19 +1,19 @@
 A0 -> A1 A2
 A1 -> A3 A1 | null
-A3 -> A4 qua_sav_func_name ( A5 ) { qua_new_synbl A6 }
+A3 -> A4 qua_sav_func_name qua_new_synbl ( A5 ) { A6 qua_return }
 A5 -> A7 A8 | null
 A8 -> , A7 A8 | null
-A7 -> A9 B0
+A7 -> A9 B0 qua_declare_id qua_declare
 B0 -> A4 | & A4
-A2 -> main qua_sav_func_name ( ) { qua_new_synbl A6 }
+A2 -> main qua_sav_func_name ( ) { qua_new_synbl A6 qua_return }
 A6 -> B1 A6 | null | B2 A6
 B1 -> B3 | B4 | B5
 B3 -> B6 ;
-B5 -> if ( B7 ) { A6 } B8
+B5 -> if qua_gen_func_name ( B7 ) { qua_new_synbl A6 qua_return } B8
 B8 -> else B9 | null
 B9 -> { A6 } | B5
-B4 -> while ( B7 ) { A6 }
-B4 -> for ( C0 ; C1 ; C2 ) { A6 }
+B4 -> while qua_gen_func_name ( B7 ) { qua_new_synbl A6 qua_return }
+B4 -> for qua_gen_func_name qua_new_synbl ( C0 ; C1 ; C2 ) { A6 qua_return }
 C0 -> B6 | null
 C1 -> B7 | null
 C2 -> B6 | null
@@ -39,8 +39,8 @@ E1 -> E3 E4
 E4 -> * E3 qua* E4 | / E3 qua/ E4 | null
 E3 -> E5
 E5 -> E6 | ! E6 | - E6 qua.
-E6 -> A4 quap D0 | D4 quap | ( B7 )
-B6 -> E7 | A4 C7 | return | C3 | struct A4 E8
+E6 -> A4 quap qua_check_def_e D0 | D4 quap | ( B7 )
+B6 -> E7 | A4 qua_check_def C7 | return | C3 | struct A4 E8
 E7 -> A9 E9
 E9 -> A4 qua_declare_id F0 qua_declare F1
 F0 -> [ F2 qua_declare_arr ] | null

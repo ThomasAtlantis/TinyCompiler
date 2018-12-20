@@ -9,7 +9,7 @@ size_t Tables::global_count = 0;
 
 Tables::Tables() {
     KT = { // 预留关键字表
-            "main", "char", "double", "enum", "float", "int", "long", "short", "signed", "struct", "union",
+            "char", "double", "enum", "float", "int", "long", "short", "signed", "struct", "union",
             "unsigned", "void", "for", "do", "while", "break", "continue", "if", "else", "goto",
             "switch", "case", "default ", "return", "auto", "extern", "register", "static", "const",
             "sizeof", "typedef", "volatile", "putc", "puts", "bool"
@@ -57,22 +57,20 @@ void Tables::new_synbl(string name) {
     auto * synbl = new SYNBL;
 
     // 主表记录
-    auto * synbl_dict_v = new SYNBL_DICT_V;
-    synbl_dict_v->child = synbl;
     if (synbl_cur != nullptr) {
-        synbl_dict_v->parent = synbl_cur->child;
-        synbl_dict_v->level = synbl_cur->level + 1;
-        synbl_dict_v->index = synbl_cur->child->content.size() - 1;
+        synbl->parent = synbl_cur;
+        synbl->level = synbl_cur->level + 1;
+        synbl->index = synbl_cur->content.size() - 1;
     } else {
-        synbl_dict_v->parent = nullptr;
-        synbl_dict_v->level = 0;
+        synbl->parent = nullptr;
+        synbl->level = 0;
     }
 
     // 主表记录填入字典
-    synbl_dict.insert(pair<string, SYNBL_DICT_V> (name, *synbl_dict_v));
+    synbl_dict.insert(pair<string, SYNBL*> (name, synbl));
 
     // 修改当前主表记录
-    synbl_cur = synbl_dict_v;
+    synbl_cur = synbl;
 }
 
 Tables::SYNBL_V *SYNBL::search(const string &src) {
@@ -94,6 +92,27 @@ size_s Tables::get_size_of(Tables::TVAL type) {
         case CHAR: return 1;
         default: return 0;
     }
+}
+
+Tables::SYNBL_V *Tables::search(const string &src) {
+    SYNBL* synbl = synbl_cur;
+    if (!synbl->content.empty()) {
+        for (size_t i = 0; i < synbl->content.size() - 1; i++) {
+            if (synbl->content[i]->src == src) return synbl->content[i];
+        }
+    }
+    while (synbl->parent != nullptr) {
+        size_t index = synbl->index;
+        synbl = synbl->parent;
+        for (size_t i = 0; i <= index; i++) { // <= 考虑函数的递归调用
+            if (synbl->content[i]->src == src) return synbl->content[i];
+        }
+    }
+    return nullptr;
+}
+
+void Tables::ret_synbl() {
+    synbl_cur = synbl_cur->parent;
 }
 
 SYNBL::SYNBL() {

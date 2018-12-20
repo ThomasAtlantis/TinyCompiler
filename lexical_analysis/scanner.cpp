@@ -38,7 +38,7 @@ Token Scanner::Scanner::scan_next() {
             int index = find(tables.cT, ch);
             if (index == -1) tables.cT.push_back(&ch);
             token = new Tables::SYNBL_V {
-                "", tables.synbl_cur->child->get_xtp('c'), Tables::CONSTANT, &ch
+                "", tables.synbl_cur->get_xtp('c'), Tables::CONSTANT, &ch
             };
         } else throw ScannerException(line_label, Errors::syntax_error[0]);
     }
@@ -50,7 +50,7 @@ Token Scanner::Scanner::scan_next() {
             int index = find(tables.ST, str);
             if (index == -1) tables.ST.push_back(&str);
             token = new Tables::SYNBL_V {
-                "", tables.synbl_cur->child->get_xtp('s'), Tables::CONSTANT, &str
+                "", tables.synbl_cur->get_xtp('s'), Tables::CONSTANT, &str
             };
         } else throw ScannerException(line_label, Errors::syntax_error[1]);
     }
@@ -65,7 +65,7 @@ Token Scanner::Scanner::scan_next() {
             if (index != -1) tables.CT.push_back(num);
             char xtp = num->type == Tables::INTEGER ? 'i': 'r';
             token = new Tables::SYNBL_V {
-                "", tables.synbl_cur->child->get_xtp(xtp), Tables::CONSTANT, num
+                "", tables.synbl_cur->get_xtp(xtp), Tables::CONSTANT, num
             };
         } else throw ScannerException(line_label, Errors::syntax_error[2]);
     }
@@ -83,7 +83,7 @@ Token Scanner::Scanner::scan_next() {
             int index = find(tables.CT, num);
             if (index != -1) tables.CT.push_back(&num);
             token = new Tables::SYNBL_V {
-                "", tables.synbl_cur->child->get_xtp('b'), Tables::CONSTANT, &num
+                "", tables.synbl_cur->get_xtp('b'), Tables::CONSTANT, &num
             };
         } else {
             if (count(all(tables.KT), tmp) != 0) {
@@ -91,9 +91,9 @@ Token Scanner::Scanner::scan_next() {
                     "", nullptr, Tables::KEYWORD, nullptr
                 };
             } else {
-                auto * synbl_v = tables.synbl_cur->child->search(tmp);
+                auto * synbl_v = tables.synbl_cur->search(tmp);
                 if (synbl_v == nullptr) {
-                    token = tables.synbl_cur->child->add(tmp);
+                    token = tables.synbl_cur->add(tmp);
                 } else {
                     token = synbl_v;
                 }

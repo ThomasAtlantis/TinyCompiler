@@ -1,24 +1,24 @@
 ﻿
 $程序 -> $其他函数定义 $主函数定义
-
+// TODO: 函数重定义检测、函数未定义检测、结构体作用域控制
 $其他函数定义 -> $函数定义 $其他函数定义 | null
-$函数定义 -> $标识符 qua_sav_func_name ( $形参列表 ) { qua_new_synbl $函数体 }
+$函数定义 -> $标识符 qua_sav_func_name qua_new_synbl ( $形参列表 ) { $函数体 qua_return }
 $形参列表 -> $形参 $其他形参 | null
 $其他形参 -> , $形参 $其他形参 | null
-$形参 -> $类型 $形参tmp1
+$形参 -> $类型 $形参tmp1 qua_declare_id qua_declare
 $形参tmp1 -> $标识符 | & $标识符
 
-$主函数定义 -> main qua_sav_func_name ( ) { qua_new_synbl $函数体 }
+$主函数定义 -> main qua_sav_func_name ( ) { qua_new_synbl $函数体 qua_return }
 $函数体 -> $总结构 $函数体 | null | $循环跳转 $函数体
 $总结构 -> $顺序结构 | $循环结构 | $分支结构1
 $顺序结构 -> $语句 ;
 
-$分支结构1 -> if ( $表达式 ) { $函数体 } $分支结构2
+$分支结构1 -> if qua_gen_func_name ( $表达式 ) { qua_new_synbl $函数体 qua_return } $分支结构2
 $分支结构2 -> else $分支结构3 | null
 $分支结构3 -> { $函数体 } | $分支结构1
 
-$循环结构 -> while ( $表达式 ) { $函数体 }
-$循环结构 -> for ( $for_list_0 ; $for_list_1 ; $for_list_2 ) { $函数体 }
+$循环结构 -> while qua_gen_func_name ( $表达式 ) { qua_new_synbl $函数体 qua_return }
+$循环结构 -> for qua_gen_func_name qua_new_synbl ( $for_list_0 ; $for_list_1 ; $for_list_2 ) { $函数体 qua_return }
 $for_list_0 -> $语句 | null
 $for_list_1 -> $表达式 | null
 $for_list_2 -> $语句 | null
@@ -45,9 +45,9 @@ $tmp4 -> $算术运算
 	$tmp5_3 -> * $tmp5_4 qua* $tmp5_3 | / $tmp5_4 qua/ $tmp5_3 | null
 	$tmp5_4 -> $tmp8
 $tmp8 -> $原子结合 | ! $原子结合 | - $原子结合 qua.
-$原子结合 -> $标识符 quap $数组方括号 | $常量 quap | ( $表达式 )
+$原子结合 -> $标识符 quap qua_check_def_e $数组方括号 | $常量 quap | ( $表达式 )
 
-$语句 -> $声明语句1 | $标识符 $赋值语句和函数调用 | return | $输出语句 | struct $标识符 $自定义结构声明或定义
+$语句 -> $声明语句1 | $标识符 qua_check_def $赋值语句和函数调用 | return | $输出语句 | struct $标识符 $自定义结构声明或定义
 $声明语句1 -> $类型 $声明语句tmp1
 $声明语句tmp1 -> $标识符 qua_declare_id $声明语句tmp2 qua_declare $声明语句tmp3
 $声明语句tmp2 -> [ $整型常量 qua_declare_arr ] | null

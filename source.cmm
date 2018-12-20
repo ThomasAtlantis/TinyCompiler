@@ -1,4 +1,25 @@
+power(int& x, int n) {
+    int y = x;
+    for (int i = 0; i < n; i = i + 1) {
+        x = x * y;
+    }
+}
+power() {
+
+}
+
 main() {
-    int a[2];
-    char b = 10*2;
+    int x = 2;
+    struct x {
+        int x;
+    };
+    struct a b;
+    power(x, 3);
+    for (int i = 0; i < 10; i = i + 1) {
+        while (true) {
+            i = 0;
+            int x = 2+i;
+            x = 2;
+        }
+    }
 }

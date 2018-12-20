@@ -22,20 +22,20 @@ int main() {
     grammar.set_start("A0");
     grammar.add("A0") >> "A1 A2";
     grammar.add("A1") >> "A3 A1" | "null";
-    grammar.add("A3") >> "A4 qua_sav_func_name ( A5 ) { qua_new_synbl A6 }";
+    grammar.add("A3") >> "A4 qua_sav_func_name qua_new_synbl ( A5 ) { A6 qua_return }";
     grammar.add("A5") >> "A7 A8" | "null";
     grammar.add("A8") >> ", A7 A8" | "null";
-    grammar.add("A7") >> "A9 B0";
+    grammar.add("A7") >> "A9 B0 qua_declare_id qua_declare";
     grammar.add("B0") >> "A4" | "& A4";
-    grammar.add("A2") >> "main qua_sav_func_name ( ) { qua_new_synbl A6 }";
+    grammar.add("A2") >> "main qua_sav_func_name ( ) { qua_new_synbl A6 qua_return }";
     grammar.add("A6") >> "B1 A6" | "null" | "B2 A6";
     grammar.add("B1") >> "B3" | "B4" | "B5";
     grammar.add("B3") >> "B6 ;";
-    grammar.add("B5") >> "if ( B7 ) { A6 } B8";
+    grammar.add("B5") >> "if qua_gen_func_name ( B7 ) { qua_new_synbl A6 qua_return } B8";
     grammar.add("B8") >> "else B9" | "null";
     grammar.add("B9") >> "{ A6 }" | "B5";
-    grammar.add("B4") >> "while ( B7 ) { A6 }";
-    grammar.add("B4") >> "for ( C0 ; C1 ; C2 ) { A6 }";
+    grammar.add("B4") >> "while qua_gen_func_name ( B7 ) { qua_new_synbl A6 qua_return }";
+    grammar.add("B4") >> "for qua_gen_func_name qua_new_synbl ( C0 ; C1 ; C2 ) { A6 qua_return }";
     grammar.add("C0") >> "B6" | "null";
     grammar.add("C1") >> "B7" | "null";
     grammar.add("C2") >> "B6" | "null";
@@ -61,8 +61,8 @@ int main() {
     grammar.add("E4") >> "* E3 qua* E4" | "/ E3 qua/ E4" | "null";
     grammar.add("E3") >> "E5";
     grammar.add("E5") >> "E6" | "! E6" | "- E6 qua.";
-    grammar.add("E6") >> "A4 quap D0" | "D4 quap" | "( B7 )";
-    grammar.add("B6") >> "E7" | "A4 C7" | "return" | "C3" | "struct A4 E8";
+    grammar.add("E6") >> "A4 quap qua_check_def_e D0" | "D4 quap" | "( B7 )";
+    grammar.add("B6") >> "E7" | "A4 qua_check_def C7" | "return" | "C3" | "struct A4 E8";
     grammar.add("E7") >> "A9 E9";
     grammar.add("E9") >> "A4 qua_declare_id F0 qua_declare F1";
     grammar.add("F0") >> "[ F2 qua_declare_arr ]" | "null";
@@ -79,6 +79,7 @@ int main() {
     grammar.add("C6") >> "@CH";
     grammar.add("C5") >> "@STR";
     grammar.add("F8") >> "true" | "false";
+
     //*/
 
     const string file_name = "../source.cmm";

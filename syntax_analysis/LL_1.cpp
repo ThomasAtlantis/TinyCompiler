@@ -170,7 +170,8 @@ string LL1::token2str(Token token) {
     if (token->cate == Tables::KEYWORD || token->cate == Tables::DELIMITER) {
         return token->src;
     } else if (token->cate == Tables::VARIABLE) {
-        return "@I";
+        if (token->src == "main") return token->src;
+        else return "@I";
     } else if (token->cate == Tables::CONSTANT) {
         switch (token->type->tval) {
         case Tables::INTEGER: return "@INT";
@@ -210,7 +211,6 @@ vector<Quarternary> LL1::check_trans() {
         string w = token2str(token);
         Analyze_table_item* p = get_op(syn.back(), w); // 查LL1分析表
         if (!p || (p->stack_op).empty()) { // 如果查表越界或查到的表项为空则报错
-            cout << "SYN.BACK(): " << syn.back() << endl;
             throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token->src);
         } else if (p->stack_op[0] == "OK") { // 如果查到OK则接收字符串返回四元式序列
             return Qs;
@@ -231,10 +231,10 @@ vector<Quarternary> LL1::check_trans() {
                     num->type = Tables::INTEGER;
                     num->value.i = 0;
                     auto * res_1 = new Tables::SYNBL_V {
-                        "0", G.tables.synbl_cur->child->get_xtp('i'), Tables::CONSTANT, num
+                        "0", G.tables.synbl_cur->get_xtp('i'), Tables::CONSTANT, num
                     };
                     auto * res_2 = operands.back();
-                    auto * res = G.tables.synbl_cur->child->add(Tables::get_global_name());
+                    auto * res = G.tables.synbl_cur->add(Tables::get_global_name());
                     operands.pop_back();
                     Quarternary Q = {"-", res_1, res_2, res};
                     Qs.push_back(Q);
@@ -245,7 +245,7 @@ vector<Quarternary> LL1::check_trans() {
                     operands.pop_back();
                     auto * res_1 = operands.back();
                     operands.pop_back();
-                    auto * res = G.tables.synbl_cur->child->add(Tables::get_global_name());
+                    auto * res = G.tables.synbl_cur->add(Tables::get_global_name());
                     Quarternary Q = {operat, res_1, res_2, res};
                     Qs.push_back(Q);
                     operands.push_back(res);
@@ -255,10 +255,16 @@ vector<Quarternary> LL1::check_trans() {
                 else if (operat == "_new_synbl") {
                     G.tables.new_synbl(function_name);
                 }
+                else if (operat == "_return") {
+                    G.tables.ret_synbl();
+                }
 
                 // 储存当前函数名
                 else if (operat == "_sav_func_name") {
                     function_name = token->src;
+                }
+                else if (operat == "_gen_func_name") {
+                    function_name = token->src + Tables::get_global_name();
                 }
 
                 // 获取类型
@@ -280,7 +286,7 @@ vector<Quarternary> LL1::check_trans() {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[4] + ": " + token->src);
                     array_len = (size_s)num->value.i;
                 } else if (operat == "_declare") {
-                        SYNBL* synbl = G.tables.synbl_cur->child;
+                        SYNBL* synbl = G.tables.synbl_cur;
                     if (array_len != 0) {
                         // 新建数组信息
                         auto * array_info = new Tables::AINEL;
@@ -320,6 +326,15 @@ vector<Quarternary> LL1::check_trans() {
                         declare_id->addr = nullptr;
                         // TODO: 计算addr，即variable的区距，有赖于活动记录栈
                     }
+                }
+
+                else if (operat == "_check_def") {
+                    if (token->type == nullptr and G.tables.search(token->src) == nullptr)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[6] + ": " + token->src);
+                } else if (operat == "_check_def_e") {
+                    Token tmp = operands.back();
+                    if (tmp->type == nullptr and G.tables.search(tmp->src) == nullptr)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[6] + ": " + tmp->src);
                 }
 
             /************** 语义动作 **************/
