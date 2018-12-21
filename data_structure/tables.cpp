@@ -9,7 +9,7 @@ size_t Tables::global_count = 0;
 
 Tables::Tables() {
     KT = { // 预留关键字表
-            "char", "double", "enum", "float", "int", "long", "short", "signed", "struct", "union",
+            "main", "char", "double", "enum", "float", "int", "long", "short", "signed", "struct", "union",
             "unsigned", "void", "for", "do", "while", "break", "continue", "if", "else", "goto",
             "switch", "case", "default ", "return", "auto", "extern", "register", "static", "const",
             "sizeof", "typedef", "volatile", "putc", "puts", "bool"
@@ -96,11 +96,11 @@ size_s Tables::get_size_of(Tables::TVAL type) {
 
 Tables::SYNBL_V *Tables::search(const string &src) {
     SYNBL* synbl = synbl_cur;
-    if (!synbl->content.empty()) {
-        for (size_t i = 0; i < synbl->content.size() - 1; i++) {
-            if (synbl->content[i]->src == src) return synbl->content[i];
-        }
-    }
+//    if (!synbl->content.empty()) {
+//        for (size_t i = 0; i < synbl->content.size() - 1; i++) {
+//            if (synbl->content[i]->src == src) return synbl->content[i];
+//        }
+//    }
     while (synbl->parent != nullptr) {
         size_t index = synbl->index;
         synbl = synbl->parent;
@@ -108,6 +108,12 @@ Tables::SYNBL_V *Tables::search(const string &src) {
             if (synbl->content[i]->src == src) return synbl->content[i];
         }
     }
+    return nullptr;
+}
+
+SYNBL* Tables::search_func(const string &src) {
+    auto x = synbl_dict.find(src);
+    if (x != synbl_dict.end()) return x->second;
     return nullptr;
 }
 

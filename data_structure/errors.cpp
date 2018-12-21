@@ -5,13 +5,15 @@
 #include "errors.h"
 
 const string Errors::syntax_error[] = {
-    "Syntax Error: incorrect character",
+    "Syntax Error: incorrect character", // 0
     "Syntax Error: incorrect character string",
     "Syntax Error: incorrect constant",
     "Syntax Error: wrong expression",
     "Syntax Error: wrong index for array declaration",
-    "Syntax Error: redeclaration of variable",
-    "Syntax Error: undeclared variable"
+    "Syntax Error: redeclaration of variable", // 5
+    "Syntax Error: undeclared identifier",
+    "Syntax Error: redeclaration of function",
+    "Syntax Error: undeclared struct type"
 };
 const string Errors::symbol_error[] = {
     "Symbol Error: incorrect delimiters",

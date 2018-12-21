@@ -129,6 +129,7 @@ void LL1::initialize_table() {
         } else { // 如果当前遍历到的符号为非终结符
             auto p = Grammar::G.find(*iter);
             for (auto &it: p->second) {
+
                 switch (G.symbol_type(it[0])) { // 判断右部每个产生式的开头符号
                     case Grammar::Null: // epsilon
                     {
@@ -169,9 +170,8 @@ void LL1::initialize_table() {
 string LL1::token2str(Token token) {
     if (token->cate == Tables::KEYWORD || token->cate == Tables::DELIMITER) {
         return token->src;
-    } else if (token->cate == Tables::VARIABLE) {
-        if (token->src == "main") return token->src;
-        else return "@I";
+    } else if (token->cate == Tables::VARIABLE || token->cate == Tables::TYPE) {
+        return "@I";
     } else if (token->cate == Tables::CONSTANT) {
         switch (token->type->tval) {
         case Tables::INTEGER: return "@INT";
@@ -199,6 +199,9 @@ vector<Quarternary> LL1::check_trans() {
     Tables::TVAL declare_type = Tables::INTEGER;
     Tables::SYNBL_V* declare_id = nullptr;
     size_s array_len = 0;
+
+    // For struct
+    Tables::SYNBL_V* struct_id = nullptr;
     /************** 语义动作用到的变量 **************/
 
     Token token = nullptr;
@@ -211,6 +214,7 @@ vector<Quarternary> LL1::check_trans() {
         string w = token2str(token);
         Analyze_table_item* p = get_op(syn.back(), w); // 查LL1分析表
         if (!p || (p->stack_op).empty()) { // 如果查表越界或查到的表项为空则报错
+            cout << syn.back() << ", " << w << endl;
             throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token->src);
         } else if (p->stack_op[0] == "OK") { // 如果查到OK则接收字符串返回四元式序列
             return Qs;
@@ -261,6 +265,8 @@ vector<Quarternary> LL1::check_trans() {
 
                 // 储存当前函数名
                 else if (operat == "_sav_func_name") {
+                    if (G.tables.search_func(token->src) != nullptr)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[7] + ": " + token->src);
                     function_name = token->src;
                 }
                 else if (operat == "_gen_func_name") {
@@ -337,6 +343,37 @@ vector<Quarternary> LL1::check_trans() {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[6] + ": " + tmp->src);
                 }
 
+                else if (operat == "_new_synbl_struct") {
+                    G.tables.new_synbl(function_name);
+                } else if (operat == "_declare_struct_id") {
+                    if (token->type != nullptr and token->type->tval != Tables::STRUCTURE)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[8] + ": " + token->src);
+                    struct_id = token;
+                } else if (operat == "_struct_def") {
+                    SYNBL* synbl = G.tables.synbl_cur;
+
+                    auto * rinfl = new Tables::RINEL;
+
+                    auto * len = new Tables::LENL;
+                    synbl->lenl.push_back(len);
+
+                    auto * typel = new Tables::TYPEL;
+                    typel->tval = Tables::STRUCTURE;
+                    typel->tptr = rinfl;
+                    synbl->typel.push_back(typel);
+
+                    struct_id->cate = Tables::TYPE;
+                    struct_id->type = typel;
+                    struct_id->addr = len;
+                } else if (operat == "_struct_check_def") {
+                    auto * result = G.tables.search(struct_id->src);
+                    if ((struct_id->type == nullptr and (result == nullptr or result->type->tval != Tables::STRUCTURE))
+                        or (struct_id->type->tval != Tables::STRUCTURE)) {
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[8] + ": " + struct_id->src);
+                    }
+                    if (token->type != nullptr)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[5] + ": " + token->src);
+                }
             /************** 语义动作 **************/
             }
             if (p->read_op == 'N') { // 如果当前输入流操作为N，则读下一Token

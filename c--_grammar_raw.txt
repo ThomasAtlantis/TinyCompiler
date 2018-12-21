@@ -1,12 +1,16 @@
-﻿
+﻿// TODO: 函数定义和调用的四元式生成
+// TODO: 函数符号表和活动记录栈的填写
+// TODO: 结构体定义域变量符号表填写
+// TODO: 数组下标索引处理
+// TODO: 赋值语句符号表填写和四元式生成
+// TODO: 循环语句和分支语句
 $程序 -> $其他函数定义 $主函数定义
-// TODO: 函数重定义检测、函数未定义检测、结构体作用域控制
 $其他函数定义 -> $函数定义 $其他函数定义 | null
 $函数定义 -> $标识符 qua_sav_func_name qua_new_synbl ( $形参列表 ) { $函数体 qua_return }
 $形参列表 -> $形参 $其他形参 | null
 $其他形参 -> , $形参 $其他形参 | null
-$形参 -> $类型 $形参tmp1 qua_declare_id qua_declare
-$形参tmp1 -> $标识符 | & $标识符
+$形参 -> $类型 $形参tmp1 qua_declare
+$形参tmp1 -> $标识符 qua_declare_id $声明语句tmp2 | & $标识符 qua_declare_id
 
 $主函数定义 -> main qua_sav_func_name ( ) { qua_new_synbl $函数体 qua_return }
 $函数体 -> $总结构 $函数体 | null | $循环跳转 $函数体
@@ -30,7 +34,7 @@ $赋值语句 -> $数组方括号 = $表达式
 $函数调用 -> ( $实参列表 )
 $实参列表 -> $实参 $其他实参 | null
 $其他实参 -> , $实参 $其他实参 | null
-$实参 -> $标识符 | $常量
+$实参 -> $标识符 qua_check_def $数组方括号 | $常量
 $跳转语句 -> return
 $类型 -> int qua_int | float qua_float | bool qua_bool | char qua_char
 
@@ -47,16 +51,18 @@ $tmp4 -> $算术运算
 $tmp8 -> $原子结合 | ! $原子结合 | - $原子结合 qua.
 $原子结合 -> $标识符 quap qua_check_def_e $数组方括号 | $常量 quap | ( $表达式 )
 
-$语句 -> $声明语句1 | $标识符 qua_check_def $赋值语句和函数调用 | return | $输出语句 | struct $标识符 $自定义结构声明或定义
+$语句 -> $声明语句1 | $标识符 qua_check_def $赋值语句和函数调用 | return | $输出语句
+$语句 -> struct qua_gen_func_name $标识符 qua_declare_struct_id $自定义结构声明或定义
+$自定义结构声明或定义 -> $标识符 qua_struct_check_def
+$自定义结构声明或定义 -> { qua_struct_def qua_new_synbl_struct $声明语句2 ; $声明语句块 qua_return }
 $声明语句1 -> $类型 $声明语句tmp1
 $声明语句tmp1 -> $标识符 qua_declare_id $声明语句tmp2 qua_declare $声明语句tmp3
 $声明语句tmp2 -> [ $整型常量 qua_declare_arr ] | null
 $声明语句tmp3 -> = $表达式 | null
-$自定义结构声明或定义 -> $标识符 | { $声明语句2 ; $声明语句块 }
 $声明语句2 -> $类型 $标识符 $数组方括号 | struct $标识符 $标识符
 $声明语句块 -> $声明语句2 ; $声明语句块 | null
 $标识符 -> @I
-$数组索引 -> $整型变量 | $整型常量
+$数组索引 -> $标识符 qua_check_def | $整型常量
 $数组方括号 -> [ $数组索引 ] | null
 $常量 -> $整型常量 | $实型常量 | $布尔常量
 $整型常量 -> @INT

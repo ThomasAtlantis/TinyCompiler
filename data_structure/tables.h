@@ -91,6 +91,8 @@ public:
 
     SYNBL_V* search(const string &src);
 
+    SYNBL *search_func(const string &src);
+
 };
 
 class SYNBL {
