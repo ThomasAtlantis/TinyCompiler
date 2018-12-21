@@ -134,8 +134,14 @@ void LL1::initialize_table() {
                     case Grammar::Null: // epsilon
                     {
                         set<string> select = G.select_set_of(*iter, it);
+                        vector<string> stack_op;
+                        if (it.size() > 1) {
+                            for (const auto &symbol: it)
+                                if (symbol.find("qua") != string::npos)
+                                    stack_op.insert(stack_op.begin(), symbol);
+                        } else stack_op.push_back(Grammar::null);
                         for (const auto &set_it: select) {
-                            set_op(*iter, set_it, vector<string>{Grammar::null}, 'P');
+                            set_op(*iter, set_it, stack_op, 'P');
                         }
                         break;
                     }
@@ -202,6 +208,10 @@ vector<Quarternary> LL1::check_trans() {
 
     // For struct
     Tables::SYNBL_V* struct_id = nullptr;
+
+    // For for_loop adjustment
+    size_t for_invert_begin = 0;
+    size_t for_invert_end = 0;
     /************** 语义动作用到的变量 **************/
 
     Token token = nullptr;
@@ -230,29 +240,59 @@ vector<Quarternary> LL1::check_trans() {
                 // 对于quap将操作数保存入栈
                 if (operat == "p") {
                     operands.push_back(token);
+                } else if (operat == "p_id") {
+                    operands.push_back(declare_id);
                 } else if (operat == ".") { // 对于qua. 处理符号运算
                     auto * num = new Tables::Number;
                     num->type = Tables::INTEGER;
                     num->value.i = 0;
-                    auto * res_1 = new Tables::SYNBL_V {
+                    auto * src_1 = new Tables::SYNBL_V {
                         "0", G.tables.synbl_cur->get_xtp('i'), Tables::CONSTANT, num
                     };
-                    auto * res_2 = operands.back();
-                    auto * res = G.tables.synbl_cur->add(Tables::get_global_name());
+                    auto * src_2 = operands.back();
+                    auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
                     operands.pop_back();
-                    Quarternary Q = {"-", res_1, res_2, res};
+                    Quarternary Q = {"-", src_1, src_2, dst};
                     Qs.push_back(Q);
-                    operands.push_back(res);
+                    operands.push_back(dst);
                     // 对于其他二元运算
                 } else if (operat == "+" or operat == "-" or operat == "*" or operat == "/") {
-                    auto * res_2 = operands.back();
+                    auto * src_2 = operands.back();
                     operands.pop_back();
-                    auto * res_1 = operands.back();
+                    auto * src_1 = operands.back();
                     operands.pop_back();
-                    auto * res = G.tables.synbl_cur->add(Tables::get_global_name());
-                    Quarternary Q = {operat, res_1, res_2, res};
+                    auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
+                    Quarternary Q = {operat, src_1, src_2, dst};
                     Qs.push_back(Q);
-                    operands.push_back(res);
+                    operands.push_back(dst);
+                } else if (operat == "=") {
+                    auto * src = operands.back();
+                    operands.pop_back();
+                    auto * dst = operands.back();
+                    operands.pop_back();
+                    Quarternary Q {operat, src, nullptr, dst};
+                    Qs.push_back(Q);
+                } else if (operat == "[]") {
+                    auto * index = operands.back();
+                    operands.pop_back();
+                    auto * array = operands.back();
+                    operands.pop_back();
+                    auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
+                    Quarternary Q {operat, array, index, dst};
+                    Qs.push_back(Q);
+                    operands.push_back(dst);
+                }
+
+                else if (operat == ">" or operat == "<" or operat == "<=" or
+                    operat == ">=" or operat == "==" or operat == "!=" ) {
+                    auto * src_2 = operands.back();
+                    operands.pop_back();
+                    auto * src_1 = operands.back();
+                    operands.pop_back();
+                    auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
+                    Quarternary Q = {operat, src_1, src_2, dst};
+                    Qs.push_back(Q);
+                    operands.push_back(dst);
                 }
 
                 // 左花括号后新建符号表
@@ -292,7 +332,7 @@ vector<Quarternary> LL1::check_trans() {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[4] + ": " + token->src);
                     array_len = (size_s)num->value.i;
                 } else if (operat == "_declare") {
-                        SYNBL* synbl = G.tables.synbl_cur;
+                    SYNBL* synbl = G.tables.synbl_cur;
                     if (array_len != 0) {
                         // 新建数组信息
                         auto * array_info = new Tables::AINEL;
@@ -334,7 +374,7 @@ vector<Quarternary> LL1::check_trans() {
                     }
                 }
 
-                else if (operat == "_check_def") {
+                else if (operat == "_check_def") { // 暂时没用到
                     if (token->type == nullptr and G.tables.search(token->src) == nullptr)
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[6] + ": " + token->src);
                 } else if (operat == "_check_def_e") {
@@ -373,6 +413,62 @@ vector<Quarternary> LL1::check_trans() {
                     }
                     if (token->type != nullptr)
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[5] + ": " + token->src);
+                }
+
+                else if (operat == "if") {
+                    auto * src_1 = operands.back();
+                    operands.pop_back();
+                    Quarternary Q = {operat, src_1, nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if (operat == "else") {
+                    Quarternary Q = {operat, nullptr, nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if (operat == "_endif") {
+                    Quarternary Q = {"endif", nullptr, nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if (operat == "_endifall") {
+                    Quarternary Q = {"endifall", nullptr, nullptr, nullptr};
+                    Qs.push_back(Q);
+                }
+
+                else if (operat == "wh") {
+                    Quarternary Q = {operat, nullptr, nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if (operat == "wdo" ) {
+                    auto * src_1 = operands.back();
+                    operands.pop_back();
+                    Quarternary Q = {operat, src_1, nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if (operat == "we") {
+                    Quarternary Q1 = {"wnxt", nullptr, nullptr, nullptr};
+                    Qs.push_back(Q1);
+                    Quarternary Q2 = {"wend", nullptr, nullptr, nullptr};
+                    Qs.push_back(Q2);
+                }
+
+                else if (operat == "for") {
+                    Quarternary Q = {operat, nullptr, nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if (operat == "fdo") {
+                    auto * src_1 = operands.back();
+                    operands.pop_back();
+                    Quarternary Q = {operat, src_1, nullptr, nullptr};
+                    Qs.push_back(Q);
+                    for_invert_begin = Qs.size();
+                } else if (operat == "fsav") {
+                    for_invert_end = Qs.size() - 1;
+                } else if (operat == "fe") {
+                    if (!(for_invert_begin == 0 and for_invert_end == 0)) {
+                        for (size_t i = for_invert_begin; i <= for_invert_end; i++) {
+                            auto tmp = Qs[for_invert_begin];
+                            Qs.erase(Qs.begin() + for_invert_begin);
+                            Qs.push_back(tmp);
+                        }
+                    }
+                    Quarternary Q1 = {"fnxt", nullptr, nullptr, nullptr};
+                    Qs.push_back(Q1);
+                    Quarternary Q2 = {"fend", nullptr, nullptr, nullptr};
+                    Qs.push_back(Q2);
                 }
             /************** 语义动作 **************/
             }

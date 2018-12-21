@@ -7,7 +7,7 @@
 
 #include "../utility/utility.h"
 #include "tables.h"
-
+// TODO: 报错时要rewind到上一个token
 class Errors {
 public:
     static const string syntax_error[];
