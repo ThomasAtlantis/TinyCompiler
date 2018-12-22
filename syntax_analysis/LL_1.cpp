@@ -306,6 +306,9 @@ vector<Quarternary> LL1::check_trans() {
                     auto * master = operands.back();
                     operands.pop_back();
 
+                    if (master->cate != Tables::VARIABLE or master->type->tval != Tables::STRUCTURE)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[13] + ": " + master->src);
+
                     bool has_domain = false;
                     const auto& rinfl = (Tables::RINFL *)master->type->tptr;
                     for (const auto& it: *rinfl) {
@@ -359,8 +362,11 @@ vector<Quarternary> LL1::check_trans() {
 
                 // 储存当前函数名
                 else if (operat == "_sav_func_name") {
-                    if (G.tables.search_func(token->src) != nullptr)
+                    if (token->type != nullptr) {
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[5] + ": " + token->src);
+                    } else if (G.tables.search_func(token->src) != nullptr) {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[7] + ": " + token->src);
+                    }
                     function_name = token->src;
                     token->cate = Tables::FUNCTION;
                 }
@@ -615,7 +621,7 @@ vector<Quarternary> LL1::check_trans() {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[10] + ": " + token_pre->src);
                     }
                 }
-                
+
                 else if (operat == "_func_return") {
                     Quarternary Q = {"ret", nullptr, nullptr, nullptr};
                     Qs.push_back(Q);

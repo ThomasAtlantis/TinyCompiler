@@ -1,6 +1,8 @@
 ﻿
 $程序 -> $其他函数定义 $主函数定义
-$其他函数定义 -> $函数定义 $其他函数定义 | null
+$其他函数定义 -> $函数定义 $其他函数定义 | $全局变量声明 $其他函数定义 | null
+$全局变量声明 -> $全局声明语句 ;
+$全局声明语句 -> $声明语句1 | $struct语句
 $函数定义 -> $标识符 qua_sav_func_name qua_new_synbl ( $形参列表 ) { $函数体 qua_return }
 $形参列表 -> $形参 $其他形参 | null
 $其他形参 -> , $形参 $其他形参 | null
@@ -30,7 +32,7 @@ $赋值语句 -> $数组方括号 = $表达式 qua= | . $标识符 quap qua_memb
 $函数调用 -> ( $实参列表 )
 $实参列表 -> $实参 $其他实参 | null
 $其他实参 -> , $实参 $其他实参 | null
-$实参 -> $标识符 quap qua_check_def_e $数组方括号 | $常量
+$实参 -> $表达式
 $跳转语句 -> return
 $类型 -> int qua_int | float qua_float | bool qua_bool | char qua_char
 
@@ -48,10 +50,11 @@ $tmp4 -> $算术运算
 $tmp8 -> $原子结合 | ! $原子结合 | - $原子结合 qua.
 $原子结合 -> $标识符 quap qua_check_def_e $原子结合tmp | $常量 quap | ( $表达式 )
 $原子结合tmp -> $数组方括号 | . $标识符 quap qua_member
-$语句 -> $声明语句1 | $标识符 quap qua_check_def_e $赋值语句和函数调用 | return qua_func_return | $输出语句 | $输入语句
-$语句 -> struct qua_gen_func_name $标识符 qua_declare_struct_id $自定义结构声明或定义
-$自定义结构声明或定义 -> $标识符 qua_struct_check_def qua_struct_declare
-$自定义结构声明或定义 -> { qua_struct_def qua_new_synbl_struct $声明语句2 ; $声明语句块 qua_return }
+$语句 -> $声明语句1 | $标识符 quap qua_check_def_e $赋值语句和函数调用 | return qua_func_return | $输出语句 | $输入语句 | $struct语句
+$struct语句 -> struct qua_gen_func_name $标识符 qua_declare_struct_id $自定义结构声明或定义
+$自定义结构声明或定义 -> $自定义结构声明 | $自定义结构定义
+$自定义结构声明 -> $标识符 qua_struct_check_def qua_struct_declare
+$自定义结构定义 -> { qua_struct_def qua_new_synbl_struct $声明语句2 ; $声明语句块 qua_return }
 $声明语句1 -> $类型 $声明语句tmp1
 $声明语句tmp1 -> $标识符 qua_declare_id quap_id $声明语句tmp2_1
 $声明语句tmp2_1 -> $声明语句tmp2 qua_declare | $声明语句tmp4 $声明语句tmp3

@@ -17,7 +17,8 @@ const string Errors::syntax_error[] = {
     "Syntax Error: non-exist member of struct", // 9
     "Syntax Error: jump without loop", //10
     "Syntax Error: wrong type for array index", // 11
-    "Syntax Error: array index out of range" // 12
+    "Syntax Error: array index out of range", // 12
+    "Syntax Error: non-structural type" // 13
 };
 const string Errors::symbol_error[] = {
     "Symbol Error: incorrect delimiters",

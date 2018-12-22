@@ -1,66 +1,69 @@
 A0 -> A1 A2
-A1 -> A3 A1 | null
-A3 -> A4 qua_sav_func_name qua_new_synbl ( A5 ) { A6 qua_return }
-A5 -> A7 A8 | null
-A8 -> , A7 A8 | null
-A7 -> A9 B0 qua_declare
-B0 -> A4 qua_declare_id B1 | & A4 qua_declare_id
-A2 -> main qua_sav_func_name ( ) { qua_new_synbl A6 qua_return }
-A6 -> B2 A6 | null | B3 A6
-B2 -> B4 | B5 | B6
-B4 -> B7 ;
-B6 -> if qua_gen_func_name qua_new_synbl ( B8 ) quaif { A6 qua_endif qua_return } B9
-B9 -> else qua_gen_func_name C0 | null
-C0 -> { qua_new_synbl A6 qua_endifall qua_return } | B6
-B5 -> while qua_gen_func_name qua_new_synbl quawh ( B8 ) { quawdo A6 quawe qua_return }
-B5 -> for qua_gen_func_name qua_new_synbl ( C1 ; quafor C2 quafdo ; C3 quafsav ) { A6 quafe qua_return }
-C1 -> B7 | null
-C2 -> B8 | null
-C3 -> B7 | null
-B3 -> continue qua_continue qua_check_jump ; | break qua_break qua_check_jump ;
-C4 -> getc A4 qua_getc qua_check_def_e quad
-C5 -> putc C6 qua_putc qua_check_def_e quad | puts C7 qua_puts
-C6 -> A4 | C8
-C9 -> D0 | D1
-D0 -> D2 = B8 qua= | . A4 quap qua_member = B8 qua=
-D1 -> ( D3 )
-D3 -> D4 D5 | null
-D5 -> , D4 D5 | null
-D4 -> A4 quap qua_check_def_e D2 | D6
-D7 -> return
-A9 -> int qua_int | float qua_float | bool qua_bool | char qua_char
-B8 -> D8
-D8 -> D9 E0
-E0 -> > D9 qua> | >= D9 qua>= | < D9 qua< | <= D9 qua<=
-E0 -> == D9 qua== | != D9 qua!= | null
-D9 -> E1
-E1 -> E2
-E2 -> E3 E4
-E4 -> + E3 qua+ E4 | - E3 qua- E4 | null
-E3 -> E5 E6
-E6 -> * E5 qua* E6 | / E5 qua/ E6 | null
-E5 -> E7
-E7 -> E8 | ! E8 | - E8 qua.
-E8 -> A4 quap qua_check_def_e E9 | D6 quap | ( B8 )
-E9 -> D2 | . A4 quap qua_member
-B7 -> F0 | A4 quap qua_check_def_e C9 | return qua_func_return | C5 | C4
-B7 -> struct qua_gen_func_name A4 qua_declare_struct_id F1
-F1 -> A4 qua_struct_check_def qua_struct_declare
-F1 -> { qua_struct_def qua_new_synbl_struct F2 ; F3 qua_return }
-F0 -> A9 F4
-F4 -> A4 qua_declare_id quap_id F5
-F5 -> B1 qua_declare | F6 F7
-B1 -> [ F8 qua_declare_arr ] | null
-F7 -> = B8 qua=
-F6 -> null qua_declare
-F2 -> A9 A4 qua_declare_id B1 qua_instruct_declare
-F3 -> F2 ; F3 | null
-A4 -> @I
-F9 -> A4 quap qua_check_def_e | F8 quap
-D2 -> [ F9 ] qua[] | null
-D6 -> F8 | G0 | G1 | C8 | C7
-F8 -> @INT
-G0 -> @FLT
-C8 -> @CH
-C7 -> @STR
-G1 -> true | false
+A1 -> A3 A1 | A4 A1 | null
+A4 -> A5 ;
+A5 -> A6 | A7
+A3 -> A8 qua_sav_func_name qua_new_synbl ( A9 ) { B0 qua_return }
+A9 -> B1 B2 | null
+B2 -> , B1 B2 | null
+B1 -> B3 B4 qua_declare
+B4 -> A8 qua_declare_id B5 | & A8 qua_declare_id
+A2 -> main qua_sav_func_name ( ) { qua_new_synbl B0 qua_return }
+B0 -> B6 B0 | null | B7 B0
+B6 -> B8 | B9 | C0
+B8 -> C1 ;
+C0 -> if qua_gen_func_name qua_new_synbl ( C2 ) quaif { B0 qua_endif qua_return } C3
+C3 -> else qua_gen_func_name C4 | null
+C4 -> { qua_new_synbl B0 qua_endifall qua_return } | C0
+B9 -> while qua_gen_func_name qua_new_synbl quawh ( C2 ) { quawdo B0 quawe qua_return }
+B9 -> for qua_gen_func_name qua_new_synbl ( C5 ; quafor C6 quafdo ; C7 quafsav ) { B0 quafe qua_return }
+C5 -> C1 | null
+C6 -> C2 | null
+C7 -> C1 | null
+B7 -> continue qua_continue qua_check_jump ; | break qua_break qua_check_jump ;
+C8 -> getc A8 qua_getc qua_check_def_e quad
+C9 -> putc D0 qua_putc qua_check_def_e quad | puts D1 qua_puts
+D0 -> A8 | D2
+D3 -> D4 | D5
+D4 -> D6 = C2 qua= | . A8 quap qua_member = C2 qua=
+D5 -> ( D7 )
+D7 -> D8 D9 | null
+D9 -> , D8 D9 | null
+D8 -> C2
+E0 -> return
+B3 -> int qua_int | float qua_float | bool qua_bool | char qua_char
+C2 -> E1
+E1 -> E2 E3
+E3 -> > E2 qua> | >= E2 qua>= | < E2 qua< | <= E2 qua<=
+E3 -> == E2 qua== | != E2 qua!= | null
+E2 -> E4
+E4 -> E5
+E5 -> E6 E7
+E7 -> + E6 qua+ E7 | - E6 qua- E7 | null
+E6 -> E8 E9
+E9 -> * E8 qua* E9 | / E8 qua/ E9 | null
+E8 -> F0
+F0 -> F1 | ! F1 | - F1 qua.
+F1 -> A8 quap qua_check_def_e F2 | F3 quap | ( C2 )
+F2 -> D6 | . A8 quap qua_member
+C1 -> A6 | A8 quap qua_check_def_e D3 | return qua_func_return | C9 | C8 | A7
+A7 -> struct qua_gen_func_name A8 qua_declare_struct_id F4
+F4 -> F5 | F6
+F5 -> A8 qua_struct_check_def qua_struct_declare
+F6 -> { qua_struct_def qua_new_synbl_struct F7 ; F8 qua_return }
+A6 -> B3 F9
+F9 -> A8 qua_declare_id quap_id G0
+G0 -> B5 qua_declare | G1 G2
+B5 -> [ G3 qua_declare_arr ] | null
+G2 -> = C2 qua=
+G1 -> null qua_declare
+F7 -> B3 A8 qua_declare_id B5 qua_instruct_declare
+F8 -> F7 ; F8 | null
+A8 -> @I
+G4 -> A8 quap qua_check_def_e | G3 quap
+D6 -> [ G4 ] qua[] | null
+F3 -> G3 | G5 | G6 | D2 | D1
+G3 -> @INT
+G5 -> @FLT
+D2 -> @CH
+D1 -> @STR
+G6 -> true | false
