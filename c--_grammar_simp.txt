@@ -21,7 +21,7 @@ B3 -> continue ; | break ;
 C4 -> putc C5 | puts C6
 C5 -> A4 | C7
 C8 -> C9 | D0
-C9 -> D1 = B8 qua=
+C9 -> D1 = B8 qua= | . A4 = B8 qua=
 D0 -> ( D2 )
 D2 -> D3 D4 | null
 D4 -> , D3 D4 | null
@@ -40,25 +40,27 @@ E2 -> E4 E5
 E5 -> * E4 qua* E5 | / E4 qua/ E5 | null
 E4 -> E6
 E6 -> E7 | ! E7 | - E7 qua.
-E7 -> A4 quap qua_check_def_e D1 | D5 quap | ( B8 )
-B7 -> E8 | A4 quap qua_check_def_e C8 | return | C4
-B7 -> struct qua_gen_func_name A4 qua_declare_struct_id E9
-E9 -> A4 qua_struct_check_def
-E9 -> { qua_struct_def qua_new_synbl_struct F0 ; F1 qua_return }
-E8 -> A9 F2
-F2 -> A4 qua_declare_id quap_id F3
-F3 -> B1 qua_declare | F4 F5
-B1 -> [ F6 qua_declare_arr ] | null
-F5 -> = B8 qua=
-F4 -> null qua_declare
-F0 -> A9 A4 B1 | struct A4 A4
-F1 -> F0 ; F1 | null
+E7 -> A4 quap qua_check_def_e E8 | D5 quap | ( B8 )
+E8 -> D1 | . A4
+B7 -> E9 | A4 quap qua_check_def_e C8 | return | C4
+B7 -> struct qua_gen_func_name A4 qua_declare_struct_id F0
+F0 -> A4 qua_struct_check_def qua_struct_declare
+F0 -> { qua_struct_def qua_new_synbl_struct F1 ; F2 qua_return }
+E9 -> A9 F3
+F3 -> A4 qua_declare_id quap_id F4
+F4 -> B1 qua_declare | F5 F6
+B1 -> [ F7 qua_declare_arr ] | null
+F6 -> = B8 qua=
+F5 -> null qua_declare
+F1 -> A9 A4 qua_declare_id B1 qua_instruct_declare
+F1 -> struct A4 qua_declare_struct_id A4 qua_struct_check_def qua_struct_declare
+F2 -> F1 ; F2 | null
 A4 -> @I
-F7 -> A4 quap qua_check_def_e | F6 quap
-D1 -> [ F7 ] qua[] | null
-D5 -> F6 | F8 | F9
-F6 -> @INT
-F8 -> @FLT
+F8 -> A4 quap qua_check_def_e | F7 quap
+D1 -> [ F8 ] qua[] | null
+D5 -> F7 | F9 | G0
+F7 -> @INT
+F9 -> @FLT
 C7 -> @CH
 C6 -> @STR
-F9 -> true | false
+G0 -> true | false

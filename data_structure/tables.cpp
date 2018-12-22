@@ -60,7 +60,8 @@ void Tables::new_synbl(string name) {
     if (synbl_cur != nullptr) {
         synbl->parent = synbl_cur;
         synbl->level = synbl_cur->level + 1;
-        synbl->index = synbl_cur->content.size() - 1;
+        synbl->index = synbl_cur->content.size();
+        if (synbl->index != 0) synbl->index --;
     } else {
         synbl->parent = nullptr;
         synbl->level = 0;
@@ -163,9 +164,7 @@ Tables::SYNBL_V *SYNBL::add(string src) {
 SYNBL::~SYNBL() {
     for (auto i: content) delete i; content.clear();
     for (auto i: typel) delete i; typel.clear();
-    for (auto i: rinel) delete i; rinel.clear();
     for (auto i: ainel) delete i; ainel.clear();
-    for (auto i: lenl) delete i; lenl.clear();
     for (auto i: pfinfl) delete i; pfinfl.clear();
     for (auto i: param) delete i; param.clear();
 }

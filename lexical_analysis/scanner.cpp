@@ -85,6 +85,9 @@ Token Scanner::Scanner::scan_next() {
             token = new Tables::SYNBL_V {
                 "", tables.synbl_cur->get_xtp('b'), Tables::CONSTANT, &num
             };
+        } else if (tmp == "main") {
+            token = tables.synbl_cur->add(tmp);
+            token->cate = Tables::KEYWORD;
         } else {
             if (count(all(tables.KT), tmp) != 0) {
                 token = new Tables::SYNBL_V {

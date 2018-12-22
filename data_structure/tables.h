@@ -14,7 +14,7 @@ class SYNBL;
 
 class Tables {
 public:
-    struct typel; struct ainel; struct rinel;
+    struct typel; struct ainel; struct rinfl;
     struct pfinfl; struct VALL; struct param;
     typedef enum {
         INTEGER, FLOAT, BOOLEAN, STRUCTURE, ARRAY, CHAR, STRING
@@ -29,12 +29,12 @@ public:
         size_t clen; // 数组每个元素所占用字节数
         struct typel* ctp;
     } AINEL; // 数组信息表
-    typedef struct rinel {
+    typedef struct rinfl_v {
         string id;
         size_t off;
         struct typel* tp;
-        struct rinel* next;
-    } RINEL; // 结构体信息表
+    } RINFL_V; // 结构体信息表表项
+    typedef vector<RINFL_V*> RINFL;
     typedef struct param {
         string id;
         struct typel* type;
@@ -51,7 +51,7 @@ public:
     } PFINFL; // 函数信息表
     typedef struct typel {
         TVAL tval;
-        void* tptr; // AINEL* or RINEL*
+        void* tptr; // AINEL* or RINFL*
     } TYPEL; // 类型表
     typedef struct {
         string src;
@@ -104,9 +104,9 @@ public:
 
     vector<Tables::SYNBL_V*> content; // 符号表主表，以单词源码为索引的字典
     vector<Tables::TYPEL*> typel;   // 类型表
-    vector<Tables::RINEL*> rinel;   // 结构体信息表
+//    vector<Tables::RINEL*> rinel;   // 结构体信息表
     vector<Tables::AINEL*> ainel;   // 数组信息表
-    vector<Tables::LENL *> lenl;     // 长度表
+//    vector<Tables::LENL *> lenl;     // 长度表
     vector<Tables::PFINFL*> pfinfl; // 函数信息表
     vector<Tables::PARAM*> param;   // 形参信息表
 

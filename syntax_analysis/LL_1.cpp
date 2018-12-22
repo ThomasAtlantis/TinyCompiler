@@ -176,7 +176,8 @@ void LL1::initialize_table() {
 string LL1::token2str(Token token) {
     if (token->cate == Tables::KEYWORD || token->cate == Tables::DELIMITER) {
         return token->src;
-    } else if (token->cate == Tables::VARIABLE || token->cate == Tables::TYPE) {
+    } else if (token->cate == Tables::VARIABLE ||
+        token->cate == Tables::TYPE || token->cate == Tables::DOMAINN) {
         return "@I";
     } else if (token->cate == Tables::CONSTANT) {
         switch (token->type->tval) {
@@ -208,6 +209,7 @@ vector<Quarternary> LL1::check_trans() {
 
     // For struct
     Tables::SYNBL_V* struct_id = nullptr;
+    Tables::SYNBL_V* struct_variable = nullptr;
 
     // For for_loop adjustment
     size_t for_invert_begin = 0;
@@ -215,8 +217,10 @@ vector<Quarternary> LL1::check_trans() {
     /************** 语义动作用到的变量 **************/
 
     Token token = nullptr;
+    Token token_pre = nullptr; // 储存上一个token，方便报错
     try {
         token = scanner.scan_next();
+        token_pre = token;
     } catch (ScannerException& e) {
         if (e.get_log() != Errors::fake_error[0]) throw e;
     }
@@ -224,8 +228,8 @@ vector<Quarternary> LL1::check_trans() {
         string w = token2str(token);
         Analyze_table_item* p = get_op(syn.back(), w); // 查LL1分析表
         if (!p || (p->stack_op).empty()) { // 如果查表越界或查到的表项为空则报错
-            cout << syn.back() << ", " << w << endl;
-            throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token->src);
+            // cout << syn.back() << ", " << w << endl;
+            throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token_pre->src);
         } else if (p->stack_op[0] == "OK") { // 如果查到OK则接收字符串返回四元式序列
             return Qs;
         } else {
@@ -350,7 +354,6 @@ vector<Quarternary> LL1::check_trans() {
 
                         // 填长度表
                         auto * len = new Tables::LENL {array_len * array_info->clen};
-                        synbl->lenl.push_back(len);
 
                         // 填主符号表
                         // 填匿名类型
@@ -391,28 +394,80 @@ vector<Quarternary> LL1::check_trans() {
                     struct_id = token;
                 } else if (operat == "_struct_def") {
                     SYNBL* synbl = G.tables.synbl_cur;
-
-                    auto * rinfl = new Tables::RINEL;
-
-                    auto * len = new Tables::LENL;
-                    synbl->lenl.push_back(len);
-
+                    auto * rinfl = new Tables::RINFL;
+                    auto * len = new Tables::LENL {0};
                     auto * typel = new Tables::TYPEL;
                     typel->tval = Tables::STRUCTURE;
                     typel->tptr = rinfl;
                     synbl->typel.push_back(typel);
-
                     struct_id->cate = Tables::TYPE;
                     struct_id->type = typel;
                     struct_id->addr = len;
                 } else if (operat == "_struct_check_def") {
                     auto * result = G.tables.search(struct_id->src);
                     if ((struct_id->type == nullptr and (result == nullptr or result->type->tval != Tables::STRUCTURE))
-                        or (struct_id->type->tval != Tables::STRUCTURE)) {
+                        or (struct_id->type != nullptr and struct_id->type->tval != Tables::STRUCTURE)) {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[8] + ": " + struct_id->src);
                     }
                     if (token->type != nullptr)
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[5] + ": " + token->src);
+                    if (struct_id->type == nullptr and result != nullptr and result->type->tval == Tables::STRUCTURE) {
+                        struct_id = result;
+                    }
+                    struct_variable = token;
+                } else if (operat == "_struct_declare") {
+                    struct_variable->cate = Tables::VARIABLE;
+                    struct_variable->type = struct_id->type;
+                    struct_variable->addr = nullptr;
+                    // TODO: 计算addr，即variable的区距，有赖于活动记录栈
+                } else if (operat == "_instruct_declare") {
+                    SYNBL* synbl = G.tables.synbl_cur;
+                    Tables::SYNBL_V* type = nullptr;
+                    if (array_len != 0) {
+                        // 新建数组信息
+                        auto * array_info = new Tables::AINEL;
+                        array_info->low = 0;
+                        array_info->up = array_len - 1;
+                        array_info->ctp = synbl->get_xtp(declare_type);
+                        array_info->clen = Tables::get_size_of(declare_type);
+                        synbl->ainel.push_back(array_info);
+                        // 注册数组信息入类型表
+                        auto * typel = new Tables::TYPEL;
+                        typel->tval = Tables::ARRAY;
+                        typel->tptr = array_info;
+                        synbl->typel.push_back(typel);
+                        // 填长度表
+                        auto * len = new Tables::LENL {array_len * array_info->clen};
+                        // 填主符号表
+                        // 填匿名类型
+                        type = synbl->add(Tables::get_global_name());
+                        type->cate = Tables::TYPE;
+                        type->type = typel;
+                        type->addr = len;
+                        // 填声明变量
+                        declare_id->cate = Tables::DOMAINN;
+                        declare_id->type = typel;
+                        declare_id->addr = nullptr;
+                        // TODO: 计算addr，即variable的区距，有赖于活动记录栈
+                        // 更新值
+                        array_len = 0;
+                    } else {
+                        declare_id->cate = Tables::DOMAINN;
+                        declare_id->type = synbl->get_xtp(declare_type);
+                        declare_id->addr = nullptr;
+                        // TODO: 计算addr，即variable的区距，有赖于活动记录栈
+                    }
+                    auto * rinfl_v = new Tables::RINFL_V;
+                    rinfl_v->id = declare_id->src;
+                    rinfl_v->tp = declare_id->type;
+                    auto * len = (Tables::LENL *)struct_id->addr;
+                    rinfl_v->off = *len;
+                    if (declare_id->type->tptr == nullptr) {
+                        *len += Tables::get_size_of(declare_id->type->tval);
+                    } else {
+                        auto * len_arr = (Tables::LENL *)type->addr;
+                        *len += *len_arr;
+                    }
                 }
 
                 else if (operat == "if") {
@@ -474,11 +529,14 @@ vector<Quarternary> LL1::check_trans() {
             }
             if (p->read_op == 'N') { // 如果当前输入流操作为N，则读下一Token
                 try {
+                    token_pre = token;
                     token = scanner.scan_next();
                 } catch (ScannerException& e) {
                     if (e.get_log() == Errors::fake_error[0]) {
-                        if (w != Grammar::bound)
-                            token = new Tables::SYNBL_V {Grammar::bound, nullptr, Tables::BOUND, nullptr};
+                        if (w != Grammar::bound){
+                            token_pre = token;
+                            token = new Tables::SYNBL_V{Grammar::bound, nullptr, Tables::BOUND, nullptr};
+                        }
                         else throw SyntaxException(scanner.get_line(), Errors::syntax_error[3]);
                     } else throw e;
                 }

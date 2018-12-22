@@ -1,5 +1,12 @@
+power() {
+    power();
+    int power = 0;
+}
+
 main() {
-    for (int i = 0; i < 10; i = i + 1) {
-        int x = x + 10;
-    }
+    struct x {
+        int a;
+        struct x y;
+        char x;
+    };
 }
