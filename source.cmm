@@ -26,4 +26,5 @@ gets(char a[20]) {
 main() {
     char a[20];
     gets(a);
+    return;
 }

@@ -48,7 +48,7 @@ $tmp4 -> $算术运算
 $tmp8 -> $原子结合 | ! $原子结合 | - $原子结合 qua.
 $原子结合 -> $标识符 quap qua_check_def_e $原子结合tmp | $常量 quap | ( $表达式 )
 $原子结合tmp -> $数组方括号 | . $标识符 quap qua_member
-$语句 -> $声明语句1 | $标识符 quap qua_check_def_e $赋值语句和函数调用 | return | $输出语句 | $输入语句
+$语句 -> $声明语句1 | $标识符 quap qua_check_def_e $赋值语句和函数调用 | return qua_func_return | $输出语句 | $输入语句
 $语句 -> struct qua_gen_func_name $标识符 qua_declare_struct_id $自定义结构声明或定义
 $自定义结构声明或定义 -> $标识符 qua_struct_check_def qua_struct_declare
 $自定义结构声明或定义 -> { qua_struct_def qua_new_synbl_struct $声明语句2 ; $声明语句块 qua_return }

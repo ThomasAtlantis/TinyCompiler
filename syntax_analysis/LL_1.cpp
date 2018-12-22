@@ -340,10 +340,10 @@ vector<Quarternary> LL1::check_trans() {
                     operands.push_back(token);
                     Quarternary Q {"putc", token, nullptr, nullptr};
                     Qs.push_back(Q);
-                }else if (operat == "_puts") {
+                } else if (operat == "_puts") {
                     Quarternary Q {"puts", token, nullptr, nullptr};
                     Qs.push_back(Q);
-                }else if (operat == "_getc") {
+                } else if (operat == "_getc") {
                     operands.push_back(token);
                     Quarternary Q {"getc", token, nullptr, nullptr};
                     Qs.push_back(Q);
@@ -614,6 +614,11 @@ vector<Quarternary> LL1::check_trans() {
                     if( !has_loop ){
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[10] + ": " + token_pre->src);
                     }
+                }
+                
+                else if (operat == "_func_return") {
+                    Quarternary Q = {"ret", nullptr, nullptr, nullptr};
+                    Qs.push_back(Q);
                 }
             /************** 语义动作 **************/
             }
