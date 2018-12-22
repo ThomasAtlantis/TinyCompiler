@@ -244,6 +244,8 @@ vector<Quarternary> LL1::check_trans() {
                 // 对于quap将操作数保存入栈
                 if (operat == "p") {
                     operands.push_back(token);
+                } if (operat == "d") {
+                    operands.pop_back();
                 } else if (operat == "p_id") {
                     operands.push_back(declare_id);
                 } else if (operat == ".") { // 对于qua. 处理符号运算
@@ -312,9 +314,9 @@ vector<Quarternary> LL1::check_trans() {
                             //cout << it->off << endl;
                         }
                     }
-                    if (!has_domain)
+                    if (!has_domain) {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[9] + ": " + token_pre->src);
-
+                    }
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
                     Quarternary Q {".", master, member, dst};
                     Qs.push_back(Q);
@@ -331,6 +333,20 @@ vector<Quarternary> LL1::check_trans() {
                     Quarternary Q = {operat, src_1, src_2, dst};
                     Qs.push_back(Q);
                     operands.push_back(dst);
+                }
+
+                // 输入输出语句的翻译
+                else if (operat == "_putc") {
+                    operands.push_back(token);
+                    Quarternary Q {"putc", token, nullptr, nullptr};
+                    Qs.push_back(Q);
+                }else if (operat == "_puts") {
+                    Quarternary Q {"puts", token, nullptr, nullptr};
+                    Qs.push_back(Q);
+                }else if (operat == "_getc") {
+                    operands.push_back(token);
+                    Quarternary Q {"getc", token, nullptr, nullptr};
+                    Qs.push_back(Q);
                 }
 
                 // 左花括号后新建符号表
@@ -422,8 +438,11 @@ vector<Quarternary> LL1::check_trans() {
                         if (result == nullptr) {
                             throw SyntaxException(scanner.get_line(), Errors::syntax_error[6] + ": " + tmp->src);
                         } else {
+                            G.tables.synbl_cur->content.pop_back();
+                            G.tables.synbl_cur->content.push_back(result);
                             operands.pop_back();
                             operands.push_back(result);
+
                         }
                     }
                 }

@@ -1,8 +1,29 @@
-f() {
-    struct f {
-        int a;
-    };
+sort(int a[10]) {
+    for (int j = 0; j < 10; j = j + 1) {
+        int max = 0;
+        for (int i = j + 1; i < 10; i = i + 1) {
+            if (a[max] < a[i]) {
+                max = i;
+            }
+        }
+        int tmp = a[max];
+        a[max] = a[j];
+        a[j] = tmp;
+    }
+}
+gets(char a[20]) {
+    char tmp;
+    int i;
+    for (i = 0; i < 20; i = i + 1) {
+        getc tmp;
+        if (a[i] == ' ') {
+            break;
+        }
+        a[i] = tmp;
+    }
+    a[i] = '\0';
 }
 main() {
-
+    char a[20];
+    gets(a);
 }

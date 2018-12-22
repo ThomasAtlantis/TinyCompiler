@@ -9,13 +9,13 @@ size_t Tables::global_count = 0;
 
 Tables::Tables() {
     KT = { // 预留关键字表
-            "main", "char", "double", "enum", "float", "int", "long", "short", "signed", "struct", "union",
-            "unsigned", "void", "for", "do", "while", "break", "continue", "if", "else", "goto",
-            "switch", "case", "default ", "return", "auto", "extern", "register", "static", "const",
-            "sizeof", "typedef", "volatile", "putc", "puts", "bool"
+            "main", "char", "double", "enum", "bool", "float", "int", "long", "short", "signed",
+            "struct", "union", "unsigned", "void", "for", "do", "while", "break", "continue", "if",
+            "else", "goto", "switch", "case", "default ", "return", "auto", "extern", "register",
+            "static", "const", "sizeof", "typedef", "volatile", "putc", "puts", "getc"
     };
     PT = { // 界符表
-            "#", "+", "-", "*", "/", "=", ">", "<", ",", ".", "&", "|", "!", "^", ";", "{", "}", "[",
+            "+", "-", "*", "/", "=", ">", "<", ",", ".", "&", "|", "!", "^", ";", "{", "}", "[",
             "]", ":", "?", "(", ")", "%", //  0 ~ 23 单字符
             "+=", "-=", "*=", "/=", "%=", "<=", ">=", "==", "&=", "|=", "!=", "^=", "^|", "&&", "||",
             "<<", ">>", "//", "/*", "*/", // 24 ~ 43 两字符
