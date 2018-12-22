@@ -13,7 +13,11 @@ const string Errors::syntax_error[] = {
     "Syntax Error: redeclaration of variable", // 5
     "Syntax Error: undeclared identifier",
     "Syntax Error: redeclaration of function",
-    "Syntax Error: undeclared struct type"
+    "Syntax Error: undeclared struct type",
+    "Syntax Error: non-exist member of struct", // 9
+    "Syntax Error: jump without loop", //10
+    "Syntax Error: wrong type for array index", // 11
+    "Syntax Error: array index out of range" // 12
 };
 const string Errors::symbol_error[] = {
     "Symbol Error: incorrect delimiters",

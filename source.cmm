@@ -1,12 +1,8 @@
-power() {
-    power();
-    int power = 0;
-}
-
-main() {
-    struct x {
+f() {
+    struct f {
         int a;
-        struct x y;
-        char x;
     };
+}
+main() {
+
 }

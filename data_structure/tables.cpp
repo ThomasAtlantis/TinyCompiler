@@ -67,6 +67,8 @@ void Tables::new_synbl(string name) {
         synbl->level = 0;
     }
 
+    synbl->name = name;
+
     // 主表记录填入字典
     synbl_dict.insert(pair<string, SYNBL*> (name, synbl));
 

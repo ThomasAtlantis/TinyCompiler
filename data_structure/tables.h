@@ -101,6 +101,7 @@ public:
     SYNBL* parent;
     size_t index;
     size_s level;
+    string name;
 
     vector<Tables::SYNBL_V*> content; // 符号表主表，以单词源码为索引的字典
     vector<Tables::TYPEL*> typel;   // 类型表

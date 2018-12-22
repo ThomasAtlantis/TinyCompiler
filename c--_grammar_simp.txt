@@ -9,19 +9,19 @@ A2 -> main qua_sav_func_name ( ) { qua_new_synbl A6 qua_return }
 A6 -> B2 A6 | null | B3 A6
 B2 -> B4 | B5 | B6
 B4 -> B7 ;
-B6 -> if qua_gen_func_name ( B8 ) quaif { qua_new_synbl A6 qua_endif qua_return } B9
+B6 -> if qua_gen_func_name qua_new_synbl ( B8 ) quaif { A6 qua_endif qua_return } B9
 B9 -> else qua_gen_func_name C0 | null
 C0 -> { qua_new_synbl A6 qua_endifall qua_return } | B6
-B5 -> while qua_gen_func_name quawh ( B8 ) { qua_new_synbl quawdo A6 quawe qua_return }
+B5 -> while qua_gen_func_name qua_new_synbl quawh ( B8 ) { quawdo A6 quawe qua_return }
 B5 -> for qua_gen_func_name qua_new_synbl ( C1 ; quafor C2 quafdo ; C3 quafsav ) { A6 quafe qua_return }
 C1 -> B7 | null
 C2 -> B8 | null
 C3 -> B7 | null
-B3 -> continue ; | break ;
+B3 -> continue qua_continue qua_check_jump ; | break qua_break qua_check_jump ;
 C4 -> putc C5 | puts C6
 C5 -> A4 | C7
 C8 -> C9 | D0
-C9 -> D1 = B8 qua= | . A4 = B8 qua=
+C9 -> D1 = B8 qua= | . A4 quap qua_member = B8 qua=
 D0 -> ( D2 )
 D2 -> D3 D4 | null
 D4 -> , D3 D4 | null
@@ -41,7 +41,7 @@ E5 -> * E4 qua* E5 | / E4 qua/ E5 | null
 E4 -> E6
 E6 -> E7 | ! E7 | - E7 qua.
 E7 -> A4 quap qua_check_def_e E8 | D5 quap | ( B8 )
-E8 -> D1 | . A4
+E8 -> D1 | . A4 quap qua_member
 B7 -> E9 | A4 quap qua_check_def_e C8 | return | C4
 B7 -> struct qua_gen_func_name A4 qua_declare_struct_id F0
 F0 -> A4 qua_struct_check_def qua_struct_declare
@@ -53,7 +53,6 @@ B1 -> [ F7 qua_declare_arr ] | null
 F6 -> = B8 qua=
 F5 -> null qua_declare
 F1 -> A9 A4 qua_declare_id B1 qua_instruct_declare
-F1 -> struct A4 qua_declare_struct_id A4 qua_struct_check_def qua_struct_declare
 F2 -> F1 ; F2 | null
 A4 -> @I
 F8 -> A4 quap qua_check_def_e | F7 quap

@@ -281,8 +281,42 @@ vector<Quarternary> LL1::check_trans() {
                     operands.pop_back();
                     auto * array = operands.back();
                     operands.pop_back();
+
+                    if (index->cate == Tables::CONSTANT) {
+                        auto * num = (Tables::Number *) index->addr;
+                        auto * ainel = (Tables::AINEL *) array->type->tptr;
+                        if (num->value.i > ainel->up or num->value.i < ainel->low)
+                            throw SyntaxException(scanner.get_line(), Errors::syntax_error[12] + ": " + token_pre->src);
+                    } else if (index->cate == Tables::VARIABLE) {
+                        if (index->type->tval != Tables::INTEGER)
+                            throw SyntaxException(scanner.get_line(), Errors::syntax_error[11] + ": " + token_pre->src);
+                    } else {
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[11] + ": " + token_pre->src);
+                    }
+
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
                     Quarternary Q {operat, array, index, dst};
+                    Qs.push_back(Q);
+                    operands.push_back(dst);
+                } else if (operat == "_member") {
+                    auto * member = operands.back();
+                    operands.pop_back();
+                    auto * master = operands.back();
+                    operands.pop_back();
+
+                    bool has_domain = false;
+                    const auto& rinfl = (Tables::RINFL *)master->type->tptr;
+                    for (const auto& it: *rinfl) {
+                        if (it->id == member->src) {
+                            has_domain = true;
+                            //cout << it->off << endl;
+                        }
+                    }
+                    if (!has_domain)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[9] + ": " + token_pre->src);
+
+                    auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
+                    Quarternary Q {".", master, member, dst};
                     Qs.push_back(Q);
                     operands.push_back(dst);
                 }
@@ -312,6 +346,7 @@ vector<Quarternary> LL1::check_trans() {
                     if (G.tables.search_func(token->src) != nullptr)
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[7] + ": " + token->src);
                     function_name = token->src;
+                    token->cate = Tables::FUNCTION;
                 }
                 else if (operat == "_gen_func_name") {
                     function_name = token->src + Tables::get_global_name();
@@ -382,8 +417,15 @@ vector<Quarternary> LL1::check_trans() {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[6] + ": " + token->src);
                 } else if (operat == "_check_def_e") {
                     Token tmp = operands.back();
-                    if (tmp->type == nullptr and G.tables.search(tmp->src) == nullptr)
-                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[6] + ": " + tmp->src);
+                    if (tmp->type == nullptr) {
+                        auto * result = G.tables.search(tmp->src);
+                        if (result == nullptr) {
+                            throw SyntaxException(scanner.get_line(), Errors::syntax_error[6] + ": " + tmp->src);
+                        } else {
+                            operands.pop_back();
+                            operands.push_back(result);
+                        }
+                    }
                 }
 
                 else if (operat == "_new_synbl_struct") {
@@ -405,15 +447,15 @@ vector<Quarternary> LL1::check_trans() {
                     struct_id->addr = len;
                 } else if (operat == "_struct_check_def") {
                     auto * result = G.tables.search(struct_id->src);
-                    if ((struct_id->type == nullptr and (result == nullptr or result->type->tval != Tables::STRUCTURE))
-                        or (struct_id->type != nullptr and struct_id->type->tval != Tables::STRUCTURE)) {
+                    if (struct_id->type == nullptr) {
+                        if (result == nullptr or result->type->tval != Tables::STRUCTURE)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[8] + ": " + struct_id->src);
+                        else struct_id = result;
+                    } else if (struct_id->type->tval != Tables::STRUCTURE) {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[8] + ": " + struct_id->src);
                     }
                     if (token->type != nullptr)
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[5] + ": " + token->src);
-                    if (struct_id->type == nullptr and result != nullptr and result->type->tval == Tables::STRUCTURE) {
-                        struct_id = result;
-                    }
                     struct_variable = token;
                 } else if (operat == "_struct_declare") {
                     struct_variable->cate = Tables::VARIABLE;
@@ -462,6 +504,8 @@ vector<Quarternary> LL1::check_trans() {
                     rinfl_v->tp = declare_id->type;
                     auto * len = (Tables::LENL *)struct_id->addr;
                     rinfl_v->off = *len;
+                    auto * rinfl = (Tables::RINFL *) struct_id->type->tptr;
+                    rinfl->push_back(rinfl_v);
                     if (declare_id->type->tptr == nullptr) {
                         *len += Tables::get_size_of(declare_id->type->tval);
                     } else {
@@ -524,6 +568,33 @@ vector<Quarternary> LL1::check_trans() {
                     Qs.push_back(Q1);
                     Quarternary Q2 = {"fend", nullptr, nullptr, nullptr};
                     Qs.push_back(Q2);
+                }
+                    //循环跳转语句
+                else if ( operat == "_continue" ){
+                    Quarternary Q = {"continue", nullptr, nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if ( operat == "_break" ){
+                    Quarternary Q = {"break", nullptr, nullptr, nullptr};
+                    Qs.push_back(Q);
+                }
+                    //跳转语句判定
+                else if(operat=="_check_jump"){
+                    SYNBL* synbl = G.tables.synbl_cur;
+                    bool has_loop = false;
+                    while ( synbl != nullptr ) {
+                        if(synbl->name.find("while") != string::npos ){
+                            has_loop = true;
+                            break;
+                        }
+                        if(synbl->name.find("for") != string::npos ){
+                            has_loop = true;
+                            break;
+                        }
+                        synbl = synbl->parent;
+                    }
+                    if( !has_loop ){
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[10] + ": " + token_pre->src);
+                    }
                 }
             /************** 语义动作 **************/
             }
