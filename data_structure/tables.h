@@ -20,7 +20,8 @@ public:
         FLOAT, INTEGER, CHAR, BOOLEAN, STRING, STRUCTURE, ARRAY, NONE
     } TVAL;
     typedef enum {
-        DOMAINN, FUNCTION, CONSTANT, TYPE, VARIABLE, KEYWORD, DELIMITER, BOUND
+        DOMAINN, FUNCTION, CONSTANT, TYPE, VARIABLE,
+        VARIABLE_ADDRESS, VARIABLE_VALUE, KEYWORD, DELIMITER, BOUND
     } CATE;
     typedef size_t LENL;
     typedef struct ainel {
@@ -35,20 +36,6 @@ public:
         struct typel* tp;
     } RINFL_V; // 结构体信息表表项
     typedef vector<RINFL_V*> RINFL;
-    typedef struct param {
-        string id;
-        struct typel* type;
-        CATE cate;
-        void* addr;
-        struct param* next;
-    } PARAM; // 函数形参表
-    typedef struct pfinfl {
-        size_s level;
-        size_t off;
-        size_s fn;
-        size_t entry;
-        struct param* param;
-    } PFINFL; // 函数信息表
     typedef struct typel {
         TVAL tval;
         void* tptr; // AINEL* or RINFL*
@@ -71,6 +58,20 @@ public:
         SYNBL* synbl;
         size_t off;
     } ADDR;
+    typedef struct param {
+        string id;
+        struct typel* type;
+        CATE cate;
+        size_t off;
+    } PARAM_V; // 函数形参表
+    typedef vector<PARAM_V*> PARAM;
+    typedef struct pfinfl {
+        size_s level;
+        size_t off;
+        size_s fn = 0;
+        size_t entry;
+        PARAM* param;
+    } PFINFL; // 函数信息表
 
     map<string, SYNBL*> synbl_dict; // 符号表类的字典，一个函数对应一张表
     SYNBL* synbl_cur; // 维护当前的符号表
@@ -115,8 +116,9 @@ public:
 //    vector<Tables::RINEL*> rinel;   // 结构体信息表
     vector<Tables::AINEL*> ainel;   // 数组信息表
 //    vector<Tables::LENL *> lenl;     // 长度表
-    vector<Tables::PFINFL*> pfinfl; // 函数信息表
+    // TODO: delete param
     vector<Tables::PARAM*> param;   // 形参信息表
+    Tables::PFINFL pfinfl;//函数信息表
 
     SYNBL();
     ~SYNBL();

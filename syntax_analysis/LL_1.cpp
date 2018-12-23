@@ -183,8 +183,8 @@ void LL1::initialize_table() {
 string LL1::token2str(Token token) {
     if (token->cate == Tables::KEYWORD || token->cate == Tables::DELIMITER) {
         return token->src;
-    } else if (token->cate == Tables::VARIABLE ||
-        token->cate == Tables::TYPE || token->cate == Tables::DOMAINN) {
+    } else if (token->cate == Tables::VARIABLE || token->cate == Tables::TYPE || token->cate == Tables::DOMAINN ||
+               token->cate == Tables::VARIABLE_VALUE || token->cate == Tables::VARIABLE_ADDRESS) {
         return "@I";
     } else if (token->cate == Tables::CONSTANT) {
         switch (token->type->tval) {
@@ -286,6 +286,11 @@ vector<Quarternary> LL1::check_trans() {
     // For for_loop adjustment
     size_t for_invert_begin = 0;
     size_t for_invert_end = 0;
+
+    // For function def and call
+    bool is_addrParm = false;
+    int curParam=0;
+    string call_func_name;
     /************** 语义动作用到的变量 **************/
 
     Token token = nullptr;
@@ -393,6 +398,10 @@ vector<Quarternary> LL1::check_trans() {
                     }
 
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
+                    dst->type = new Tables::TYPEL;
+                    auto * ainel = (Tables::AINEL *) array->type->tptr;
+                    dst->type->tval = ainel->ctp->tval;
+                    dst->type->tptr = nullptr;
                     Quarternary Q {operat, array, index, dst};
                     Qs.push_back(Q);
                     operands.push_back(dst);
@@ -406,10 +415,12 @@ vector<Quarternary> LL1::check_trans() {
                         throw SyntaxException(scanner.get_line(), Errors::syntax_error[13] + ": " + master->src);
 
                     bool has_domain = false;
+                    Tables::TVAL tval;
                     const auto& rinfl = (Tables::RINFL *)master->type->tptr;
                     for (const auto& it: *rinfl) {
                         if (it->id == member->src) {
                             has_domain = true;
+                            tval = it->tp->tval;
                             //cout << it->off << endl;
                         }
                     }
@@ -417,6 +428,9 @@ vector<Quarternary> LL1::check_trans() {
                         throw SyntaxException(line_pre, Errors::syntax_error[9] + ": " + token_pre->src);
                     }
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
+                    dst->type = new Tables::TYPEL;
+                    dst->type->tptr = nullptr;
+                    dst->type->tval = tval;
                     Quarternary Q {".", master, member, dst};
                     Qs.push_back(Q);
                     operands.push_back(dst);
@@ -533,15 +547,17 @@ vector<Quarternary> LL1::check_trans() {
                         // 更新值
                         array_len = 0;
                     } else {
-                        declare_id->cate = Tables::VARIABLE;
                         declare_id->type = synbl->get_xtp(declare_type);
                         declare_id->addr = nullptr;
+                        declare_id->cate = Tables::VARIABLE;
                     }
                     declare_id->addr = new Tables::ADDR {synbl, synbl->vall_top};
-                    if( declare_id->type->tval == Tables::ARRAY ){
+                    if (is_addrParm) {
+                        synbl->vall_top += 2;
+                    } else if ( declare_id->type->tval == Tables::ARRAY ){
                         auto * len = (Tables::LENL*)type->addr;
                         synbl->vall_top += *len;
-                    }else{
+                    } else {
                         synbl->vall_top += G.tables.get_size_of(declare_id->type->tval);
                     }
                     cout << declare_id->src << ": " << ((Tables::ADDR *)declare_id->addr)->off << endl;
@@ -569,8 +585,8 @@ vector<Quarternary> LL1::check_trans() {
                 else if (operat == "_new_synbl_struct") {
                     G.tables.new_synbl(function_name);
                 } else if (operat == "_declare_struct_id") {
-                    if (token->type != nullptr and token->type->tval != Tables::STRUCTURE)
-                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[8] + ": " + token->src);
+//                    if (token->type != nullptr and token->type->tval != Tables::STRUCTURE)
+//                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[8] + ": " + token->src);
                     struct_id = token;
                 } else if (operat == "_struct_def") {
                     SYNBL* synbl = G.tables.synbl_cur;
@@ -739,6 +755,105 @@ vector<Quarternary> LL1::check_trans() {
                 else if (operat == "_func_return") {
                     Quarternary Q = {"ret", nullptr, nullptr, nullptr};
                     Qs.push_back(Q);
+                }
+
+                else if (operat == "_new_pfinfl"){//新建函数信息表
+                    SYNBL* synbl = G.tables.synbl_cur;
+                    synbl->pfinfl.level = synbl->level;
+                    synbl->pfinfl.fn = 0;
+                    synbl->pfinfl.off = 3;
+                    auto * param_1 = new Tables::PARAM;
+                    synbl->pfinfl.param = param_1;
+                    auto * temp = new Tables::SYNBL_V;
+                    temp->src = function_name;
+                    Quarternary Q = {"funcdef", temp , nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if (operat == "_declare_param" ){//新建形参
+                    SYNBL* synbl = G.tables.synbl_cur;
+                    auto * param_v = new Tables::PARAM_V;
+                    if(is_addrParm) {
+                        declare_id->cate = Tables::VARIABLE_ADDRESS;
+                        is_addrParm = false;
+                    } else {
+                        declare_id->cate = Tables::VARIABLE_VALUE;
+                    }
+                    param_v->type = declare_id->type;
+                    param_v->cate = declare_id->cate;
+                    param_v->id = declare_id->src;
+                    param_v->off = ((Tables::ADDR *)declare_id->addr)->off;
+                    // TODO
+//                    if( declare_id->type->tval == Tables::ARRAY ){
+//                        auto * len = (Tables::LENL*)type->addr;
+//                        synbl->vall_top += *len;
+//                    } else {
+//                        synbl->vall_top += G.tables.get_size_of(declare_id->type->tval);
+//                    }
+//                    cout << declare_id->src << ": " << ((Tables::ADDR *)declare_id->addr)->off << endl;
+
+                    synbl->pfinfl.param->push_back(param_v);
+                    synbl->pfinfl.fn ++;
+//                    Quarternary Q{param_v->id, nullptr , nullptr, nullptr};
+//                    Qs.push_back(Q);
+                } else if(operat == "_addrParm") {
+                    is_addrParm = true;
+                }
+                else if (operat == "_endproc") {
+                    Quarternary Q1 = {"return", nullptr , nullptr, nullptr};
+                    Qs.push_back(Q1);
+                    Quarternary Q = {"endfdef", nullptr , nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if (operat == "_call") {
+                    Token tmp = operands.back();
+                    Quarternary Q = {"callfunc", tmp , nullptr, nullptr};
+                    curParam = 0;
+                    Qs.push_back(Q);
+                    call_func_name = tmp->src;
+                } else if (operat == "_contrast"|| operat == "_contrastC") {
+                    Token tmp = operands.back();
+                    SYNBL* synbl = G.tables.search_func(call_func_name);
+                    if(curParam >= synbl->pfinfl.fn)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[15]);
+                    auto * param = synbl->pfinfl.param;
+                    auto * param_value = (*param)[curParam];
+                    curParam ++;
+                    Quarternary Q;
+                    if(operat == "_contrastC") {
+                        if(token->type->tval != param_value->type->tval)
+                            throw SyntaxException(scanner.get_line(), Errors::syntax_error[16] + ": " + tmp->src);
+                        else{
+                            tmp = token;
+                        }
+                    } else {
+                        if (tmp->type->tval != param_value->type->tval ) {
+                            throw SyntaxException(scanner.get_line(), Errors::syntax_error[16] + ": " + tmp->src);
+                        } if(tmp->type->tval == Tables::ARRAY){
+                            auto * tmpa = (Tables::AINEL*) tmp->type->tptr;
+                            auto * tmpv = (Tables::AINEL*) param_value->type->tptr;
+                            if (tmpa->ctp->tval != tmpv->ctp->tval)
+                                throw SyntaxException(scanner.get_line(), Errors::syntax_error[17] + ": " + tmp->src);
+                            else if (tmpa->up != tmpv->up)
+                                throw SyntaxException(scanner.get_line(), Errors::syntax_error[18] + ": " + tmp->src);
+                        } else if(tmp->type->tval == Tables::STRUCTURE) {
+
+                            auto * tmpsa = (Tables::RINFL*)tmp->type->tptr;
+                            auto * tmpsv = (Tables::RINFL*)param_value->type->tptr;
+                            if((*tmpsa).size() != (*tmpsv).size())
+                                throw SyntaxException(scanner.get_line(), Errors::syntax_error[19] + ": " + tmp->src);
+                            for(int i=0; i<(*tmpsa).size();i++){
+                                if((*tmpsa)[i]->id != (*tmpsv)[i]->id)
+                                    throw SyntaxException(scanner.get_line(), Errors::syntax_error[19] + ": " + tmp->src);
+                            }
+                        }
+                    }
+                    if(param_value->cate == Tables::VARIABLE_ADDRESS or param_value->type->tval == Tables::ARRAY)
+                        Q = {"value &", tmp , nullptr, nullptr};
+                    else
+                        Q = {"value", tmp , nullptr, nullptr};
+                    Qs.push_back(Q);
+                } else if(operat == "_checknum"){
+                    SYNBL* synbl = G.tables.search_func(call_func_name);
+                    if(curParam < synbl->pfinfl.fn)
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[15] );
                 }
             /************** 语义动作 **************/
             }

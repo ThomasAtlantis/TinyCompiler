@@ -19,7 +19,13 @@ const string Errors::syntax_error[] = {
     "Syntax Error: wrong type for array index", // 11
     "Syntax Error: array index out of range", // 12
     "Syntax Error: non-structural type", // 13
-    "Syntax Error: can't resolve type cast between operands" //14
+    "Syntax Error: can't resolve type cast between operands", //14
+
+    "Syntax Error: wrong number of actual parameters",//15 13
+    "Syntax Error: wrong type of actual parameters",//16 14
+    "Syntax Error: wrong array type of actual parameters",//17 15
+    "Syntax Error: wrong array length of actual parameters",//18 16
+    "Syntax Error: wrong struct type of actual parameters"//19 17
 };
 
 const string Errors::symbol_error[] = {

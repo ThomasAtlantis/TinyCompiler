@@ -68,7 +68,7 @@ void Tables::new_synbl(string name) {
     }
 
     synbl->name = name;
-    synbl->vall_top = 4 + synbl->level + 1 + 0;
+    synbl->vall_top = 4 + synbl->level + 1;
 
     // 主表记录填入字典
     synbl_dict.insert(pair<string, SYNBL*> (name, synbl));
@@ -182,7 +182,6 @@ SYNBL::~SYNBL() {
     for (auto i: content) delete i; content.clear();
     for (auto i: typel) delete i; typel.clear();
     for (auto i: ainel) delete i; ainel.clear();
-    for (auto i: pfinfl) delete i; pfinfl.clear();
     for (auto i: param) delete i; param.clear();
 }
 
