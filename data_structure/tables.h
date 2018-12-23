@@ -67,6 +67,10 @@ public:
             bool b;
         } value;
     } Number;
+    typedef  struct {
+        SYNBL* synbl;
+        size_t off;
+    } ADDR;
 
     map<string, SYNBL*> synbl_dict; // 符号表类的字典，一个函数对应一张表
     SYNBL* synbl_cur; // 维护当前的符号表
@@ -102,6 +106,7 @@ public:
     size_t index;
     size_s level;
     string name;
+    size_t vall_top;
 
     vector<Tables::SYNBL_V*> content; // 符号表主表，以单词源码为索引的字典
     vector<Tables::TYPEL*> typel;   // 类型表

@@ -394,6 +394,7 @@ vector<Quarternary> LL1::check_trans() {
                     array_len = (size_s)num->value.i;
                 } else if (operat == "_declare") {
                     SYNBL* synbl = G.tables.synbl_cur;
+                    Tables::SYNBL_V* type;
                     if (array_len != 0) {
                         // 新建数组信息
                         auto * array_info = new Tables::AINEL;
@@ -414,7 +415,7 @@ vector<Quarternary> LL1::check_trans() {
 
                         // 填主符号表
                         // 填匿名类型
-                        Tables::SYNBL_V* type = synbl->add(Tables::get_global_name());
+                        type = synbl->add(Tables::get_global_name());
                         type->cate = Tables::TYPE;
                         type->type = typel;
                         type->addr = len;
@@ -422,7 +423,6 @@ vector<Quarternary> LL1::check_trans() {
                         declare_id->cate = Tables::VARIABLE;
                         declare_id->type = typel;
                         declare_id->addr = nullptr;
-                        // TODO: 计算addr，即variable的区距，有赖于活动记录栈
 
                         // 更新值
                         array_len = 0;
@@ -430,8 +430,15 @@ vector<Quarternary> LL1::check_trans() {
                         declare_id->cate = Tables::VARIABLE;
                         declare_id->type = synbl->get_xtp(declare_type);
                         declare_id->addr = nullptr;
-                        // TODO: 计算addr，即variable的区距，有赖于活动记录栈
                     }
+                    declare_id->addr = new Tables::ADDR {synbl, synbl->vall_top};
+                    if( declare_id->type->tval == Tables::ARRAY ){
+                        auto * len = (Tables::LENL*)type->addr;
+                        synbl->vall_top += *len;
+                    }else{
+                        synbl->vall_top += G.tables.get_size_of(declare_id->type->tval);
+                    }
+                    cout << declare_id->src << ": " << ((Tables::ADDR *)declare_id->addr)->off << endl;
                 }
 
                 else if (operat == "_check_def") { // 暂时没用到
@@ -485,8 +492,11 @@ vector<Quarternary> LL1::check_trans() {
                 } else if (operat == "_struct_declare") {
                     struct_variable->cate = Tables::VARIABLE;
                     struct_variable->type = struct_id->type;
-                    struct_variable->addr = nullptr;
-                    // TODO: 计算addr，即variable的区距，有赖于活动记录栈
+                    auto * synbl = G.tables.synbl_cur;
+                    struct_variable->addr = new Tables::ADDR {synbl, synbl->vall_top};
+                    auto * len = (Tables::LENL *) struct_id->addr;
+                    synbl->vall_top += *len;
+                    cout << struct_variable->src << ": " << ((Tables::ADDR *)struct_variable->addr)->off << endl;
                 } else if (operat == "_instruct_declare") {
                     SYNBL* synbl = G.tables.synbl_cur;
                     Tables::SYNBL_V* type = nullptr;
@@ -515,14 +525,12 @@ vector<Quarternary> LL1::check_trans() {
                         declare_id->cate = Tables::DOMAINN;
                         declare_id->type = typel;
                         declare_id->addr = nullptr;
-                        // TODO: 计算addr，即variable的区距，有赖于活动记录栈
                         // 更新值
                         array_len = 0;
                     } else {
                         declare_id->cate = Tables::DOMAINN;
                         declare_id->type = synbl->get_xtp(declare_type);
                         declare_id->addr = nullptr;
-                        // TODO: 计算addr，即variable的区距，有赖于活动记录栈
                     }
                     auto * rinfl_v = new Tables::RINFL_V;
                     rinfl_v->id = declare_id->src;
