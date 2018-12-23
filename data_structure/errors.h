@@ -13,6 +13,7 @@ public:
     static const string symbol_error[];
     static const string fake_error[];
     static const string file_error[];
+    static const string warnings[];
 };
 
 class ScannerException: public exception {

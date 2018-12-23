@@ -68,7 +68,7 @@ void Tables::new_synbl(string name) {
     }
 
     synbl->name = name;
-//    synbl->vall_top = 4 + synbl->level + 1 + 0;
+    synbl->vall_top = 4 + synbl->level + 1 + 0;
 
     // 主表记录填入字典
     synbl_dict.insert(pair<string, SYNBL*> (name, synbl));
@@ -123,6 +123,20 @@ SYNBL* Tables::search_func(const string &src) {
 
 void Tables::ret_synbl() {
     synbl_cur = synbl_cur->parent;
+}
+
+string Tables::get_type_name(Tables::TVAL type) {
+    switch (type) {
+        case Tables::FLOAT: return "FLOAT";
+        case Tables::INTEGER: return "INTEGER";
+        case Tables::BOOLEAN: return "BOOLEAN";
+        case Tables::CHAR: return "CHAR";
+        case Tables::STRING: return "STRING";
+        case STRUCTURE: return "STRUCTURE";
+        case ARRAY: return "ARRAY";
+        case NONE: return "NONE";
+        default: return "";
+    }
 }
 
 SYNBL::SYNBL() {

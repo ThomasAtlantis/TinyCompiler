@@ -6,6 +6,7 @@
 #include "../lexical_analysis/scanner.h"
 #include "../data_structure/token.h"
 #include "../data_structure/tables.h"
+#include "../data_structure/quarternary.h"
 
 // LL1构造函数，初始化成员变量
 LL1::LL1(Grammar& grammar, Scanner& sc): G(grammar), scanner(sc) {
@@ -37,6 +38,12 @@ LL1::LL1(Grammar& grammar, Scanner& sc): G(grammar), scanner(sc) {
             table[i] = new Analyze_table_item [currents.size()];
         }
         initialize_table();
+        //为隐式类型转换表开辟空间
+        type_trans = new Tables::TVAL* [7];
+        for(size_s i = 0; i < 7; i++){
+            type_trans[i] = new Tables::TVAL [7];
+        }
+        initialize_type_trans();
     }
 }
 LL1::~LL1() = default;
@@ -193,6 +200,71 @@ string LL1::token2str(Token token) {
     } else return "";
 }
 
+Token LL1::type_check_tool(vector<Quarternary>& Qs, const Token& src, const Token& dst, const string& op) {
+    auto result = type_trans[src->type->tval][dst->type->tval];
+    if(result == Tables::NONE) {
+        throw SyntaxException(
+                scanner.get_line(),
+                Errors::syntax_error[14] + ": " + Tables::get_type_name(src->type->tval) +
+                " and " + Tables::get_type_name(dst->type->tval)
+        );
+    } else {
+        auto *after_change = G.tables.synbl_cur->add(Tables::get_global_name());
+        after_change->type = new Tables::TYPEL;
+        after_change->type->tptr = nullptr;
+        char type[] = {'f', 'i', 'c', 'b', 's', 't', 'a', 'n'};
+        string cast = "cast_";
+        Quarternary Q;
+        if (op == "dst") {
+            after_change->type->tval = dst->type->tval;
+            cast = cast + type[src->type->tval] + "2" + type[after_change->type->tval];
+            Q = {cast, src, nullptr, after_change};
+        } else {
+            after_change->type->tval = result;
+            Token p = nullptr;
+            if (result != src->type->tval) p = src;
+            else p = dst;
+            cast = cast + type[p->type->tval] + "2" + type[after_change->type->tval];
+            Q = {cast, p, nullptr, after_change};
+        }
+        Qs.push_back(Q);
+        if (Q.a->type->tval < Q.res->type->tval) {
+            cout << "(" + to_string(scanner.get_line()) +") "
+                 << Errors::warnings[0]
+                 << ": from " + Tables::get_type_name(src->type->tval)
+                 << " to " + Tables::get_type_name(dst->type->tval)
+                 << endl;
+        }
+        if (Q.a->type->tval == Tables::BOOLEAN and Q.res->type->tval == Tables::INTEGER) {
+            //Qs.pop_back();
+            auto * one_num = new Tables::Number;
+            one_num->type = Tables::INTEGER;
+            one_num->value.i = 1;
+            auto * one = new Tables::SYNBL_V {
+                "1", G.tables.synbl_cur->get_xtp('i'), Tables::CONSTANT, one_num
+            };
+            auto * zero_num = new Tables::Number;
+            zero_num->type = Tables::INTEGER;
+            zero_num->value.i = 0;
+            auto * zero = new Tables::SYNBL_V {
+                "0", G.tables.synbl_cur->get_xtp('i'), Tables::CONSTANT, zero_num
+            };
+            Quarternary q1 {"if", Q.a, nullptr, nullptr};
+            Quarternary q2 {"=", one, nullptr, after_change};
+            Quarternary q3 {"endif", nullptr, nullptr, nullptr};
+            Quarternary q4 {"=", zero, nullptr, after_change};
+            Quarternary q5 {"endifall", nullptr, nullptr, nullptr};
+            Qs.pop_back();
+            Qs.push_back(q1);
+            Qs.push_back(q2);
+            Qs.push_back(q3);
+            Qs.push_back(q4);
+            Qs.push_back(q5);
+        }
+        return after_change;
+    }
+}
+
 // 语法分析主控函数
 vector<Quarternary> LL1::check_trans() {
     vector<Quarternary> Qs; // 返回四元式序列
@@ -218,9 +290,11 @@ vector<Quarternary> LL1::check_trans() {
 
     Token token = nullptr;
     Token token_pre = nullptr; // 储存上一个token，方便报错
+    size_s line_pre = 0;
     try {
         token = scanner.scan_next();
         token_pre = token;
+        line_pre = scanner.get_line();
     } catch (ScannerException& e) {
         if (e.get_log() != Errors::fake_error[0]) throw e;
     }
@@ -229,7 +303,7 @@ vector<Quarternary> LL1::check_trans() {
         Analyze_table_item* p = get_op(syn.back(), w); // 查LL1分析表
         if (!p || (p->stack_op).empty()) { // 如果查表越界或查到的表项为空则报错
             // cout << syn.back() << ", " << w << endl;
-            throw SyntaxException(scanner.get_line(), Errors::syntax_error[3] + ": " + token_pre->src);
+            throw SyntaxException(line_pre, Errors::syntax_error[3] + ": " + token_pre->src);
         } else if (p->stack_op[0] == "OK") { // 如果查到OK则接收字符串返回四元式序列
             return Qs;
         } else {
@@ -249,13 +323,17 @@ vector<Quarternary> LL1::check_trans() {
                 } else if (operat == "p_id") {
                     operands.push_back(declare_id);
                 } else if (operat == ".") { // 对于qua. 处理符号运算
+                    auto * src_2 = operands.back();
+                    if (src_2->type->tval != Tables::INTEGER and src_2->type->tval != Tables::FLOAT) {
+                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[14] + ": " + token->src);
+                    }
+
                     auto * num = new Tables::Number;
                     num->type = Tables::INTEGER;
                     num->value.i = 0;
                     auto * src_1 = new Tables::SYNBL_V {
                         "0", G.tables.synbl_cur->get_xtp('i'), Tables::CONSTANT, num
                     };
-                    auto * src_2 = operands.back();
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
                     operands.pop_back();
                     Quarternary Q = {"-", src_1, src_2, dst};
@@ -268,16 +346,34 @@ vector<Quarternary> LL1::check_trans() {
                     auto * src_1 = operands.back();
                     operands.pop_back();
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
-                    Quarternary Q = {operat, src_1, src_2, dst};
-                    Qs.push_back(Q);
-                    operands.push_back(dst);
+                    dst->type = new Tables::TYPEL;
+                    if (src_1->type->tval != src_2->type->tval) {
+                        Token after_change = type_check_tool(Qs, src_1, src_2, "res");
+                        Quarternary Q = {operat, src_1, src_2, dst};
+                        if (after_change->type->tval != src_1->type->tval) Q.a = after_change;
+                        else Q.b = after_change;
+                        dst->type->tval = after_change->type->tval;
+                        Qs.push_back(Q);
+                        operands.push_back(dst);
+                    } else {
+                        dst->type->tval = src_1->type->tval;
+                        Quarternary Q = {operat, src_1, src_2, dst};
+                        Qs.push_back(Q);
+                        operands.push_back(dst);
+                    }
                 } else if (operat == "=") {
                     auto * src = operands.back();
                     operands.pop_back();
                     auto * dst = operands.back();
                     operands.pop_back();
-                    Quarternary Q {operat, src, nullptr, dst};
-                    Qs.push_back(Q);
+                    if (src->type->tval != dst->type->tval) {
+                            Token after_change = type_check_tool(Qs, src, dst, "dst");
+                            Quarternary Q1 = {operat, after_change, nullptr, dst};
+                            Qs.push_back(Q1);
+                    } else {
+                        Quarternary Q {operat, src, nullptr, dst};
+                        Qs.push_back(Q);
+                    }
                 } else if (operat == "[]") {
                     auto * index = operands.back();
                     operands.pop_back();
@@ -288,12 +384,12 @@ vector<Quarternary> LL1::check_trans() {
                         auto * num = (Tables::Number *) index->addr;
                         auto * ainel = (Tables::AINEL *) array->type->tptr;
                         if (num->value.i > ainel->up or num->value.i < ainel->low)
-                            throw SyntaxException(scanner.get_line(), Errors::syntax_error[12] + ": " + token_pre->src);
+                            throw SyntaxException(line_pre, Errors::syntax_error[12] + ": " + token_pre->src);
                     } else if (index->cate == Tables::VARIABLE) {
                         if (index->type->tval != Tables::INTEGER)
-                            throw SyntaxException(scanner.get_line(), Errors::syntax_error[11] + ": " + token_pre->src);
+                            throw SyntaxException(line_pre, Errors::syntax_error[11] + ": " + token_pre->src);
                     } else {
-                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[11] + ": " + token_pre->src);
+                        throw SyntaxException(line_pre, Errors::syntax_error[11] + ": " + token_pre->src);
                     }
 
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
@@ -318,7 +414,7 @@ vector<Quarternary> LL1::check_trans() {
                         }
                     }
                     if (!has_domain) {
-                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[9] + ": " + token_pre->src);
+                        throw SyntaxException(line_pre, Errors::syntax_error[9] + ": " + token_pre->src);
                     }
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
                     Quarternary Q {".", master, member, dst};
@@ -333,9 +429,19 @@ vector<Quarternary> LL1::check_trans() {
                     auto * src_1 = operands.back();
                     operands.pop_back();
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
-                    Quarternary Q = {operat, src_1, src_2, dst};
-                    Qs.push_back(Q);
-                    operands.push_back(dst);
+                    dst->type = new Tables::TYPEL {Tables::BOOLEAN, nullptr};
+                    if (src_1->type->tval != src_2->type->tval) {
+                        Token after_change = type_check_tool(Qs, src_1, src_2, "res");
+                        Quarternary Q = {operat, src_1, src_2, dst};
+                        if (after_change->type->tval != src_1->type->tval) Q.a = after_change;
+                        else Q.b = after_change;
+                        Qs.push_back(Q);
+                        operands.push_back(dst);
+                    } else {
+                        Quarternary Q = {operat, src_1, src_2, dst};
+                        Qs.push_back(Q);
+                        operands.push_back(dst);
+                    }
                 }
 
                 // 输入输出语句的翻译
@@ -626,7 +732,7 @@ vector<Quarternary> LL1::check_trans() {
                         synbl = synbl->parent;
                     }
                     if( !has_loop ){
-                        throw SyntaxException(scanner.get_line(), Errors::syntax_error[10] + ": " + token_pre->src);
+                        throw SyntaxException(line_pre, Errors::syntax_error[10] + ": " + token_pre->src);
                     }
                 }
 
@@ -639,11 +745,13 @@ vector<Quarternary> LL1::check_trans() {
             if (p->read_op == 'N') { // 如果当前输入流操作为N，则读下一Token
                 try {
                     token_pre = token;
+                    line_pre = scanner.get_line();
                     token = scanner.scan_next();
                 } catch (ScannerException& e) {
                     if (e.get_log() == Errors::fake_error[0]) {
                         if (w != Grammar::bound){
                             token_pre = token;
+                            line_pre = scanner.get_line();
                             token = new Tables::SYNBL_V{Grammar::bound, nullptr, Tables::BOUND, nullptr};
                         }
                         else throw SyntaxException(scanner.get_line(), Errors::syntax_error[3]);
@@ -652,4 +760,32 @@ vector<Quarternary> LL1::check_trans() {
             }
         }
     }
+}
+
+void LL1::initialize_type_trans() {
+    for(size_s i = 0; i < 3; i++){
+        for(size_s j = 0; j < 3; j++){
+            if(i <= j){
+                type_trans[i][j] = Tables::TVAL(i);
+            }else if(i > j){
+                type_trans[i][j] = Tables::TVAL(j);
+            }
+        }
+    }
+    for(size_s i = 0; i < 7; i++){
+        for(size_s j = 0; j < 7; j++){
+            if(i == 3 && j == 3){
+                type_trans[i][j] = Tables::INTEGER;
+            } else if (i >= 3 || j >= 3) {
+                type_trans[i][j] = Tables::NONE;
+            }
+        }
+    }
+    type_trans[3][1] = Tables::INTEGER;
+//    for (int i = 0; i < 7; i ++) {
+//        for (int j = 0; j < 7; j ++) {
+//            cout << setw(10) << left << Tables::get_type_name(type_trans[i][j]) << " ";
+//        }
+//        cout << endl;
+//    }
 }

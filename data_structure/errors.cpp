@@ -18,8 +18,10 @@ const string Errors::syntax_error[] = {
     "Syntax Error: jump without loop", //10
     "Syntax Error: wrong type for array index", // 11
     "Syntax Error: array index out of range", // 12
-    "Syntax Error: non-structural type" // 13
+    "Syntax Error: non-structural type", // 13
+    "Syntax Error: can't resolve type cast between operands" //14
 };
+
 const string Errors::symbol_error[] = {
     "Symbol Error: incorrect delimiters",
     "Symbol Error: incorrect annotation"
@@ -29,4 +31,7 @@ const string Errors::fake_error[] = {
 };
 const string Errors::file_error[] = {
     "File Error: failed to open source file"
+};
+const string Errors::warnings[] = {
+    "Warning: this will cause precision loss" // 0
 };

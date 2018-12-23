@@ -17,7 +17,7 @@ public:
     struct typel; struct ainel; struct rinfl;
     struct pfinfl; struct VALL; struct param;
     typedef enum {
-        INTEGER, FLOAT, BOOLEAN, STRUCTURE, ARRAY, CHAR, STRING
+        FLOAT, INTEGER, CHAR, BOOLEAN, STRING, STRUCTURE, ARRAY, NONE
     } TVAL;
     typedef enum {
         DOMAINN, FUNCTION, CONSTANT, TYPE, VARIABLE, KEYWORD, DELIMITER, BOUND
@@ -92,6 +92,8 @@ public:
     static string get_global_name();
 
     static size_s get_size_of(TVAL type);
+
+    static string get_type_name(TVAL type);
 
     SYNBL_V* search(const string &src);
 

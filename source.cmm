@@ -1,42 +1,4 @@
-int k = 0;
-bool sot;
-sort(int a[10]) {
-    for (int j = 0; j < 10; j = j + 1) {
-        int max = 0;
-        for (int i = j + 1; i < 10; i = i + 1) {
-            if (a[max] < a[i]) {
-                max = i;
-            }
-        }
-        int tmp = a[max];
-        a[max] = a[j];
-        a[j] = tmp;
-    }
-}
-char ch;
-gets(char a[20]) {
-    char tmp;
-    int i;
-    for (i = 0; i < 20; i = i + 1) {
-        getc tmp;
-        if (a[i] == ' ') {
-            break;
-        }
-        a[i] = tmp;
-    }
-    a[i] = '\0';
-}
-char z;
-struct st {
-    char name[20];
-    int number;
-};
-struct st n;
 main() {
-    k = k + 1;
-    ch = z;
-    char a[20];
-    struct st m;
-    gets(m.name);
-    return;
+    bool b = (1 < 3.33);
+    int a = b;
 }
