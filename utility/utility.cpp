@@ -35,3 +35,9 @@ ostream& operator<<(ostream& out, set<string> st) {
     for (const auto &str: st) out << str << " ";
     return out;
 }
+
+string operator*(const basic_string<char> &str, int n) {
+    string res;
+    for (int i = 0; i < n; i ++) res += str;
+    return res;
+}

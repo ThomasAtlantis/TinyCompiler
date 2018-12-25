@@ -33,12 +33,12 @@ Token Scanner::Scanner::scan_next() {
 
     // 识别字符，填tables.cT表
     else if (current_char == '\'') {
-        char ch;
-        if (p_charac.process(curr_index, ch)) {
-            int index = find(tables.cT, ch);
-            if (index == -1) tables.cT.push_back(&ch);
+        auto * ch = new char;
+        if (p_charac.process(curr_index, *ch)) {
+            int index = find(tables.cT, *ch);
+            if (index == -1) tables.cT.push_back(ch);
             token = new Tables::SYNBL_V {
-                "", tables.synbl_cur->get_xtp('c'), Tables::CONSTANT, &ch
+                "", tables.synbl_cur->get_xtp('c'), Tables::CONSTANT, ch
             };
         } else throw ScannerException(line_label, Errors::syntax_error[0]);
     }
@@ -48,7 +48,10 @@ Token Scanner::Scanner::scan_next() {
         string str;
         if (p_string.process(curr_index, str)) {
             int index = find(tables.ST, str);
-            if (index == -1) tables.ST.push_back(&str);
+            char* s = new char[str.length() + 1];
+            strcpy(s, str.c_str());
+            s[str.length()] = '\0';
+            if (index == -1) tables.ST.push_back(s);
             token = new Tables::SYNBL_V {
                 "", tables.synbl_cur->get_xtp('s'), Tables::CONSTANT, &str
             };
@@ -62,7 +65,7 @@ Token Scanner::Scanner::scan_next() {
         curr_index --;
         if (p_number.process(curr_index, num)) {
             int index = find(tables.CT, *num);
-            if (index != -1) tables.CT.push_back(num);
+            if (index == -1) tables.CT.push_back(num);
             char xtp = num->type == Tables::INTEGER ? 'i': 'r';
             token = new Tables::SYNBL_V {
                 "", tables.synbl_cur->get_xtp(xtp), Tables::CONSTANT, num
@@ -135,6 +138,7 @@ Token Scanner::Scanner::scan_next() {
         } else throw ScannerException(line_label, Errors::symbol_error[0]);
     }
     token->src = buffer.substr(old_index, curr_index - old_index);
+    cout << token << endl;
     return token;
 }
 

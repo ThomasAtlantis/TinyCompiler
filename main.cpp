@@ -2,6 +2,7 @@
 #include "utility/utility.h"
 #include "lexical_analysis/scanner.h"
 #include "syntax_analysis/LL_1.h"
+#include "data_structure/tables.h"
 
 int main() {
     Tables tables;
@@ -102,13 +103,55 @@ int main() {
 
     Scanner scanner(buffer, tables);
     LL1 ll1(grammar, scanner);
+    vector<Quarternary> Qs;
+    cout << endl << "# Token Sequence #" << endl;
     if (ll1.available) {
         try {
-            vector<Quarternary> Qs = ll1.check_trans();
-            if (!Qs.empty()) print_qs(Qs);
+             Qs = ll1.check_trans();
         } catch (exception& e) {
             cout << e.what() << endl;
         }
     }
+    size_t i;
+    cout << endl << "# Keyword Table #" << endl;
+    for (i = 0; i < tables.KT.size(); i ++) {
+        cout << "[" << setw(4) << left << i << "] ";
+        cout << setw(10) << left << tables.KT[i];
+        if (i % 4 == 3) cout << endl;
+    }
+    if (i % 4 != 0) cout << endl;
+    cout << endl << "# Delimiter Table #" << endl;
+    for (i = 0; i < tables.PT.size(); i ++) {
+        cout << "[" << setw(4) << left << i << "] ";
+        cout << setw(10) << left << tables.PT[i];
+        if (i % 4 == 3) cout << endl;
+    }
+    if (i % 4 != 0) cout << endl;
+    cout << endl << "# Character Table #" << endl;
+    for (i = 0; i < tables.cT.size(); i ++) {
+        cout << "[" << setw(4) << left << i << "] ";
+        cout << setw(10) << left << string("\'") + *tables.cT[i] + "\'";
+        if (i % 4 == 3) cout << endl;
+    }
+    if (i % 4 != 0) cout << endl;
+    cout << endl << "# String Table #" << endl;
+    for (i = 0; i < tables.ST.size(); i ++) {
+        cout << "[" << setw(4) << left << i << "] ";
+        cout << setw(10) << left << string("\"") + tables.ST[i] + "\"";
+        if (i % 4 == 3) cout << endl;
+    }
+    if (i % 4 != 0) cout << endl;
+    cout << endl << "# Number Table #" << endl;
+    for (i = 0; i < tables.CT.size(); i ++) {
+        cout << "[" << setw(4) << left << i << "] ";
+        cout << setw(10) << left << *tables.CT[i];
+        if (i % 4 == 3) cout << endl;
+    }
+    if (i % 4 != 0) cout << endl;
+    cout << endl << "# Symbol Table #" << endl;
+    vector<bool> vec;
+    (tables.search_func("#GLOBAL"))->show_tree(vec);
+    cout << endl << "# Quarternaries #" << endl;
+    if (!Qs.empty()) print_qs(Qs);
     return 0;
 }

@@ -27,25 +27,25 @@ public:
     typedef struct ainel {
         size_t low;
         size_t up;
-        size_t clen; // æ•°ç»„æ¯ä¸ªå…ƒç´ æ‰€å ç”¨å­—èŠ‚æ•°
+        size_t clen; // Êı×éÃ¿¸öÔªËØËùÕ¼ÓÃ×Ö½ÚÊı
         struct typel* ctp;
-    } AINEL; // æ•°ç»„ä¿¡æ¯è¡¨
+    } AINEL; // Êı×éĞÅÏ¢±í
     typedef struct rinfl_v {
         string id;
         size_t off;
         struct typel* tp;
-    } RINFL_V; // ç»“æ„ä½“ä¿¡æ¯è¡¨è¡¨é¡¹
+    } RINFL_V; // ½á¹¹ÌåĞÅÏ¢±í±íÏî
     typedef vector<RINFL_V*> RINFL;
     typedef struct typel {
         TVAL tval;
         void* tptr; // AINEL* or RINFL*
-    } TYPEL; // ç±»å‹è¡¨
+    } TYPEL; // ÀàĞÍ±í
     typedef struct {
         string src;
         struct typel* type;
         CATE cate;
         void* addr;
-    } SYNBL_V; // ç¬¦å·è¡¨ä¸»è¡¨å€¼
+    } SYNBL_V; // ·ûºÅ±íÖ÷±íÖµ
     typedef struct {
         TVAL type;
         union {
@@ -63,7 +63,7 @@ public:
         struct typel* type;
         CATE cate;
         size_t off;
-    } PARAM_V; // å‡½æ•°å½¢å‚è¡¨
+    } PARAM_V; // º¯ÊıĞÎ²Î±í
     typedef vector<PARAM_V*> PARAM;
     typedef struct pfinfl {
         size_s level;
@@ -71,30 +71,33 @@ public:
         size_s fn = 0;
         size_t entry;
         PARAM* param;
-    } PFINFL; // å‡½æ•°ä¿¡æ¯è¡¨
+    } PFINFL; // º¯ÊıĞÅÏ¢±í
 
-    map<string, SYNBL*> synbl_dict; // ç¬¦å·è¡¨ç±»çš„å­—å…¸ï¼Œä¸€ä¸ªå‡½æ•°å¯¹åº”ä¸€å¼ è¡¨
-    SYNBL* synbl_cur; // ç»´æŠ¤å½“å‰çš„ç¬¦å·è¡¨
-    static size_t global_count; // å…¨å±€å”¯ä¸€æ ‡è¯†è®¡æ•°å™¨
-    vector<string> KT;  // å…³é”®å­—è¡¨
-    vector<string> PT;  // ç•Œç¬¦è¡¨
-    vector<Charac*> cT; // å­—ç¬¦å¸¸é‡è¡¨
-    vector<string*> ST; // å­—ç¬¦ä¸²å¸¸é‡è¡¨
-    vector<Number*> CT; // æ•°å€¼å¸¸é‡è¡¨
+    map<string, SYNBL*> synbl_dict; // ·ûºÅ±íÀàµÄ×Öµä£¬Ò»¸öº¯Êı¶ÔÓ¦Ò»ÕÅ±í
+    SYNBL* synbl_cur; // Î¬»¤µ±Ç°µÄ·ûºÅ±í
+    static size_t global_count; // È«¾ÖÎ¨Ò»±êÊ¶¼ÆÊıÆ÷
+    static size_t heap_top;
+    vector<string> KT;  // ¹Ø¼ü×Ö±í
+    vector<string> PT;  // ½ç·û±í
+    vector<Charac*> cT; // ×Ö·û³£Á¿±í
+    vector<Charac*> ST; // ×Ö·û´®³£Á¿±í
+    vector<Number*> CT; // ÊıÖµ³£Á¿±í
     Tables();
     ~Tables();
 
-    // æ–°å»ºä¸€å¼ ç¬¦å·è¡¨
+    // ĞÂ½¨Ò»ÕÅ·ûºÅ±í
     void new_synbl(string name);
 
     void ret_synbl();
 
-    // è·å–ä¸€ä¸ªå…¨å±€å”¯ä¸€æ ‡è¯†çš„åå­—ï¼štx
+    // »ñÈ¡Ò»¸öÈ«¾ÖÎ¨Ò»±êÊ¶µÄÃû×Ö£ºtx
     static string get_global_name();
 
     static size_s get_size_of(TVAL type);
 
     static string get_type_name(TVAL type);
+
+    static string get_cate_name(CATE cate);
 
     SYNBL_V* search(const string &src);
 
@@ -106,40 +109,41 @@ class SYNBL {
 public:
 
     SYNBL* parent;
+    vector<SYNBL*> childs;
     size_t index;
     size_s level;
     string name;
     size_t vall_top;
 
-    vector<Tables::SYNBL_V*> content; // ç¬¦å·è¡¨ä¸»è¡¨ï¼Œä»¥å•è¯æºç ä¸ºç´¢å¼•çš„å­—å…¸
-    vector<Tables::TYPEL*> typel;   // ç±»å‹è¡¨
-//    vector<Tables::RINEL*> rinel;   // ç»“æ„ä½“ä¿¡æ¯è¡¨
-    vector<Tables::AINEL*> ainel;   // æ•°ç»„ä¿¡æ¯è¡¨
-//    vector<Tables::LENL *> lenl;     // é•¿åº¦è¡¨
-    // TODO: delete param
-    vector<Tables::PARAM*> param;   // å½¢å‚ä¿¡æ¯è¡¨
-    Tables::PFINFL pfinfl;//å‡½æ•°ä¿¡æ¯è¡¨
+    vector<Tables::SYNBL_V*> content; // ·ûºÅ±íÖ÷±í£¬ÒÔµ¥´ÊÔ´ÂëÎªË÷ÒıµÄ×Öµä
+    vector<Tables::TYPEL*> typel;   // ÀàĞÍ±í
+//    vector<Tables::RINEL*> rinel;   // ½á¹¹ÌåĞÅÏ¢±í
+    vector<Tables::AINEL*> ainel;   // Êı×éĞÅÏ¢±í
+//    vector<Tables::LENL *> lenl;     // ³¤¶È±í
+ //   vector<Tables::PARAM*> param;   // ĞÎ²ÎĞÅÏ¢±í
+    Tables::PFINFL pfinfl;//º¯ÊıĞÅÏ¢±í
 
     SYNBL();
     ~SYNBL();
 
-    // å˜é‡å¡«è¡¨ï¼Œå¯ä»¥æ˜¯ç”¨æˆ·å®šä¹‰æ ‡è¯†ç¬¦ï¼Œä¹Ÿå¯ä»¥æ˜¯ä¸´æ—¶å˜é‡
+    // ±äÁ¿Ìî±í£¬¿ÉÒÔÊÇÓÃ»§¶¨Òå±êÊ¶·û£¬Ò²¿ÉÒÔÊÇÁÙÊ±±äÁ¿
     Tables::SYNBL_V* add(string src);
 
-    // åœ¨è¡¨ä¸­æŸ¥æ‰¾æ ‡è¯†ç¬¦srcæ˜¯å¦å­˜åœ¨
+    // ÔÚ±íÖĞ²éÕÒ±êÊ¶·ûsrcÊÇ·ñ´æÔÚ
     Tables::SYNBL_V* search(const string& src);
 
-    // è·å–itp, rtp, ctp, btpå’Œstpçš„æŒ‡é’ˆ
+    // »ñÈ¡itp, rtp, ctp, btpºÍstpµÄÖ¸Õë
     Tables::TYPEL* get_xtp(char kind);
     Tables::TYPEL* get_xtp(Tables::TVAL kind);
 
+    void show_tree(vector<bool>& vec);
 };
-// é‡è½½è¿ç®—ç¬¦
+// ÖØÔØÔËËã·û
 ostream& operator<<(ostream& out, Tables::Number n);
 bool operator==(Tables::Number n_1, Tables::Number n_2);
 
-// æŸ¥è¡¨ï¼Œè¿”å›ä½ç½®ä¸‹æ ‡
-int find(vector<string*> vec, string key);
+// ²é±í£¬·µ»ØÎ»ÖÃÏÂ±ê
+int find(vector<Charac*> vec, string key);
 int find(vector<Charac*> vec, Charac key);
 int find(vector<Tables::Number*> nums, Tables::Number key);
 

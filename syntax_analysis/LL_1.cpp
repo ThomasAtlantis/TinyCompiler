@@ -261,6 +261,8 @@ Token LL1::type_check_tool(vector<Quarternary>& Qs, const Token& src, const Toke
             Qs.push_back(q4);
             Qs.push_back(q5);
         }
+        after_change->addr = new Tables::ADDR {G.tables.synbl_cur, Tables::heap_top};
+        Tables::heap_top += Tables::get_size_of(after_change->type->tval);
         return after_change;
     }
 }
@@ -336,10 +338,16 @@ vector<Quarternary> LL1::check_trans() {
                     auto * num = new Tables::Number;
                     num->type = Tables::INTEGER;
                     num->value.i = 0;
+                    int index = find(G.tables.CT, *num);
+                    if (index == -1) G.tables.CT.push_back(num);
                     auto * src_1 = new Tables::SYNBL_V {
                         "0", G.tables.synbl_cur->get_xtp('i'), Tables::CONSTANT, num
                     };
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
+                    dst->type = src_2->type;
+                    dst->addr = new Tables::ADDR {G.tables.synbl_cur, Tables::heap_top};
+                    Tables::heap_top += Tables::get_size_of(dst->type->tval);
+
                     operands.pop_back();
                     Quarternary Q = {"-", src_1, src_2, dst};
                     Qs.push_back(Q);
@@ -366,6 +374,8 @@ vector<Quarternary> LL1::check_trans() {
                         Qs.push_back(Q);
                         operands.push_back(dst);
                     }
+                    dst->addr = new Tables::ADDR {G.tables.synbl_cur, Tables::heap_top};
+                    Tables::heap_top += Tables::get_size_of(dst->type->tval);
                 } else if (operat == "=") {
                     auto * src = operands.back();
                     operands.pop_back();
@@ -402,6 +412,9 @@ vector<Quarternary> LL1::check_trans() {
                     auto * ainel = (Tables::AINEL *) array->type->tptr;
                     dst->type->tval = ainel->ctp->tval;
                     dst->type->tptr = nullptr;
+                    dst->addr = new Tables::ADDR {G.tables.synbl_cur, Tables::heap_top};
+                    Tables::heap_top += Tables::get_size_of(dst->type->tval);
+
                     Quarternary Q {operat, array, index, dst};
                     Qs.push_back(Q);
                     operands.push_back(dst);
@@ -431,6 +444,9 @@ vector<Quarternary> LL1::check_trans() {
                     dst->type = new Tables::TYPEL;
                     dst->type->tptr = nullptr;
                     dst->type->tval = tval;
+                    dst->addr = new Tables::ADDR {G.tables.synbl_cur, Tables::heap_top};
+                    Tables::heap_top += Tables::get_size_of(dst->type->tval);
+
                     Quarternary Q {".", master, member, dst};
                     Qs.push_back(Q);
                     operands.push_back(dst);
@@ -444,6 +460,8 @@ vector<Quarternary> LL1::check_trans() {
                     operands.pop_back();
                     auto * dst = G.tables.synbl_cur->add(Tables::get_global_name());
                     dst->type = new Tables::TYPEL {Tables::BOOLEAN, nullptr};
+                    dst->addr = new Tables::ADDR {G.tables.synbl_cur, Tables::heap_top};
+                    Tables::heap_top += Tables::get_size_of(dst->type->tval);
                     if (src_1->type->tval != src_2->type->tval) {
                         Token after_change = type_check_tool(Qs, src_1, src_2, "res");
                         Quarternary Q = {operat, src_1, src_2, dst};
@@ -560,7 +578,7 @@ vector<Quarternary> LL1::check_trans() {
                     } else {
                         synbl->vall_top += G.tables.get_size_of(declare_id->type->tval);
                     }
-                    cout << declare_id->src << ": " << ((Tables::ADDR *)declare_id->addr)->off << endl;
+//                    cout << declare_id->src << ": " << ((Tables::ADDR *)declare_id->addr)->off << endl;
                 }
 
                 else if (operat == "_check_def") { // 暂时没用到
@@ -704,8 +722,20 @@ vector<Quarternary> LL1::check_trans() {
                     Quarternary Q = {operat, nullptr, nullptr, nullptr};
                     Qs.push_back(Q);
                 } else if (operat == "fdo") {
-                    auto * src_1 = operands.back();
-                    operands.pop_back();
+                    Token src_1;
+                    if (operands.empty()) {
+                        Tables::Number num;
+                        num.type = Tables::BOOLEAN;
+                        num.value.b = true;
+                        int index = find(G.tables.CT, num);
+                        if (index != -1) G.tables.CT.push_back(&num);
+                        src_1 = new Tables::SYNBL_V {
+                            "", G.tables.synbl_cur->get_xtp('b'), Tables::CONSTANT, &num
+                        };
+                    } else {
+                        src_1 = operands.back();
+                        operands.pop_back();
+                    }
                     Quarternary Q = {operat, src_1, nullptr, nullptr};
                     Qs.push_back(Q);
                     for_invert_begin = Qs.size();
@@ -771,7 +801,7 @@ vector<Quarternary> LL1::check_trans() {
                 } else if (operat == "_declare_param" ){//新建形参
                     SYNBL* synbl = G.tables.synbl_cur;
                     auto * param_v = new Tables::PARAM_V;
-                    if(is_addrParm) {
+                    if(is_addrParm or declare_id->type->tval == Tables::ARRAY) {
                         declare_id->cate = Tables::VARIABLE_ADDRESS;
                         is_addrParm = false;
                     } else {
@@ -781,7 +811,6 @@ vector<Quarternary> LL1::check_trans() {
                     param_v->cate = declare_id->cate;
                     param_v->id = declare_id->src;
                     param_v->off = ((Tables::ADDR *)declare_id->addr)->off;
-                    // TODO
 //                    if( declare_id->type->tval == Tables::ARRAY ){
 //                        auto * len = (Tables::LENL*)type->addr;
 //                        synbl->vall_top += *len;
@@ -845,7 +874,7 @@ vector<Quarternary> LL1::check_trans() {
                             }
                         }
                     }
-                    if(param_value->cate == Tables::VARIABLE_ADDRESS or param_value->type->tval == Tables::ARRAY)
+                    if(param_value->cate == Tables::VARIABLE_ADDRESS)
                         Q = {"value &", tmp , nullptr, nullptr};
                     else
                         Q = {"value", tmp , nullptr, nullptr};

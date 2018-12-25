@@ -6,6 +6,7 @@
 #include <utility>
 
 size_t Tables::global_count = 0;
+size_t Tables::heap_top = 0;
 
 Tables::Tables() {
     KT = { // 预留关键字表
@@ -61,6 +62,7 @@ void Tables::new_synbl(string name) {
         synbl->parent = synbl_cur;
         synbl->level = synbl_cur->level + 1;
         synbl->index = synbl_cur->content.size();
+        synbl_cur->childs.push_back(synbl);
         if (synbl->index != 0) synbl->index --;
     } else {
         synbl->parent = nullptr;
@@ -83,7 +85,7 @@ Tables::SYNBL_V *SYNBL::search(const string &src) {
 }
 
 string Tables::get_global_name() {
-    string global_name = "t" + to_string(global_count);
+    string global_name = "_t" + to_string(global_count);
     global_count += 1;
     return std::move(global_name);
 }
@@ -139,6 +141,22 @@ string Tables::get_type_name(Tables::TVAL type) {
     }
 }
 
+string Tables::get_cate_name(Tables::CATE cate) {
+    switch (cate) {
+        case DOMAINN: return "DOMAIN";
+        case FUNCTION: return "FUNCTION";
+        case CONSTANT: return "CONSTANT";
+        case TYPE: return "TYPE";
+        case VARIABLE: return "VARIABLE";
+        case VARIABLE_ADDRESS: return "PARAM_ADDR";
+        case VARIABLE_VALUE: return "PARAM_VALU";
+        case KEYWORD: return "KEYWORD";
+        case DELIMITER: return "DELIMITER";
+        case BOUND: return "BOUND";
+    }
+    return std::__cxx11::string();
+}
+
 SYNBL::SYNBL() {
     auto * rtp = new Tables::TYPEL {Tables::FLOAT, nullptr};
     auto * itp = new Tables::TYPEL {Tables::INTEGER, nullptr};
@@ -182,7 +200,60 @@ SYNBL::~SYNBL() {
     for (auto i: content) delete i; content.clear();
     for (auto i: typel) delete i; typel.clear();
     for (auto i: ainel) delete i; ainel.clear();
-    for (auto i: param) delete i; param.clear();
+}
+
+void SYNBL::show_tree(vector<bool>& vec) {
+    const int width = 12;
+    string s;
+    if (!vec.empty()) {
+        for (int i = 0; i < vec.size() - 1; i ++)
+            if (vec[i]) s += string(" ") * 6;
+            else s += "  |   ";
+        cout << s << "  +---";
+        if (vec.back()) s += string(" ") * 6;
+        else s += "  |   ";
+    }
+    cout << name << endl;
+    cout << s << string("-") * (width * 4 + 2) << endl;
+    cout << s << "|"
+         << setw(width) << left << "SOURCE"
+         << setw(width) << left << "TYPE"
+         << setw(width) << left << "CATE"
+         << setw(width) << left << "ADDR"
+         << "|" << endl;
+    for (auto it: content) {
+        cout << s << "|";
+        cout << setw(width) << left << it->src;
+        if (it->type != nullptr)
+            cout << setw(width) << left << Tables::get_type_name(it->type->tval);
+        else
+            cout << setw(width) << left << "--";
+        cout << setw(width) << left << Tables::get_cate_name(it->cate);
+        if (it->cate == Tables::TYPE) {
+            cout << setw(width) << left << "--";
+        } else if (it->cate == Tables::FUNCTION) {
+            cout << setw(width) << left << "--";
+        } else if (it->cate == Tables::DOMAINN) {
+            cout << setw(width) << left << "--";
+        } else if (it->cate == Tables::VARIABLE) {
+            cout << setw(width) << left << ((Tables::ADDR *)it->addr)->off;
+        } else if (it->cate == Tables::VARIABLE_ADDRESS) {
+//            cout << setw(10) << left << ((Tables::ADDR *)it->addr)->off;
+            cout << setw(width) << left << "--";
+        } else if (it->cate == Tables::VARIABLE_VALUE) {
+//            cout << setw(10) << left << ((Tables::ADDR *)it->addr)->off;
+            cout << setw(width) << left << "--";
+        }
+        cout << "|" << endl;
+    }
+    cout << s << string("-") * (width * 4 + 2) << endl;
+    if (!childs.empty()) {
+        for (int i = 0; i < childs.size(); i ++) {
+            vec.push_back(i == childs.size() - 1);
+            childs[i]->show_tree(vec);
+        }
+    }
+    vec.pop_back();
 }
 
 int find(vector<Tables::SYNBL_V*> values, Tables::SYNBL_V* key) {
@@ -191,9 +262,9 @@ int find(vector<Tables::SYNBL_V*> values, Tables::SYNBL_V* key) {
     return -1;
 }
 
-int find(vector<string*> vec, string key) {
+int find(vector<Charac*> vec, string key) {
     for (size_s index = 0; index < vec.size(); index++)
-        if (*vec[index] == key) return index;
+        if (strcmp(vec[index], key.c_str()) == 0) return index;
     return -1;
 }
 
